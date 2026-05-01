@@ -99,7 +99,7 @@ Format OBLIGATOIRE :
 
 2 basiques, 2 intermédiaires, 2 avancées.`,
 
-chronologie: `Tu es un expert en organisation. Génère une CHRONOLOGIE ou PLAN STRUCTURÉ détaillé.
+chrono: `Tu es un expert en organisation. Génère une CHRONOLOGIE ou PLAN STRUCTURÉ détaillé.
 
 Format OBLIGATOIRE :
 📅 [TITRE DU SUJET]
@@ -116,8 +116,8 @@ Format OBLIGATOIRE :
 
 ⚡ POINTS CLÉS À RETENIR :
 - [Point 1]
-- [Point 2]`
-
+- [Point 2]`,
+  chrono: ``
   const langMap = { fr: 'français', en: 'English', es: 'Español', de: 'Deutsch' };
   const langInstruction = language === 'auto'
     ? 'Réponds dans la même langue que le cours fourni.'
