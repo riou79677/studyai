@@ -116,7 +116,7 @@ Format OBLIGATOIRE :
 
 ⚡ POINTS CLÉS À RETENIR :
 - [Point 1]
-- [Point 2]`,
+- [Point 2]`
 
   const langMap = { fr: 'français', en: 'English', es: 'Español', de: 'Deutsch' };
   const langInstruction = language === 'auto'
