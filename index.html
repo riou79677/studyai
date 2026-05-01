@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyAI — Générateur de fiches IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    StudyAI
+  </div>
+  <div class="nav-right">
+    <span class="plan-badge">Plan Starter · <span id="tok-nav">5</span> générations restantes</span>
+    <a href="#" class="nav-upgrade">Passer à Pro →</a>
+  </div>
+</nav>
+
+<main>
+  <div class="hero-small">
+    <h1>Transforme ton cours en <span class="grad">outil de révision</span></h1>
+    <p>Colle ton cours, choisis un format — l'IA génère en 15 secondes.</p>
+  </div>
+
+  <div class="generator">
+
+    <!-- ÉTAPE 1 : FORMAT -->
+    <div class="step-card">
+      <div class="step-label">01 — Choisis ton format</div>
+      <div class="format-grid">
+        <div class="fmt active" data-fmt="fiche" data-icon="📄" data-name="Fiche de révision" onclick="selectFmt(this)">
+          <span class="fmt-icon">📄</span>
+          <span class="fmt-name">Fiche</span>
+        </div>
+        <div class="fmt" data-fmt="quiz" data-icon="✅" data-name="Quiz QCM" onclick="selectFmt(this)">
+          <span class="fmt-icon">✅</span>
+          <span class="fmt-name">Quiz QCM</span>
+        </div>
+        <div class="fmt" data-fmt="flash" data-icon="🃏" data-name="Flashcards" onclick="selectFmt(this)">
+          <span class="fmt-icon">🃏</span>
+          <span class="fmt-name">Flashcards</span>
+        </div>
+        <div class="fmt" data-fmt="mindmap" data-icon="🧠" data-name="Mind Map" onclick="selectFmt(this)">
+          <span class="fmt-icon">🧠</span>
+          <span class="fmt-name">Mind Map</span>
+        </div>
+        <div class="fmt" data-fmt="questions" data-icon="💬" data-name="Questions ouvertes" onclick="selectFmt(this)">
+          <span class="fmt-icon">💬</span>
+          <span class="fmt-name">Questions</span>
+        </div>
+        <div class="fmt" data-fmt="chrono" data-icon="📅" data-name="Chronologie" onclick="selectFmt(this)">
+          <span class="fmt-icon">📅</span>
+          <span class="fmt-name">Chronologie</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : COURS -->
+    <div class="step-card">
+      <div class="step-label">02 — Colle ton cours</div>
+      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours... PDF, texte, notes manuscrites retranscrites — tout fonctionne !&#10;&#10;Plus tu donnes de contenu, meilleur sera le résultat."></textarea>
+      <div class="input-footer">
+        <span id="char-count">0 caractères</span>
+        <select id="lang-sel">
+          <option value="auto">🌍 Langue auto</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+        </select>
+      </div>
+      <div class="examples">
+        <div class="examples-label">Essaie avec un exemple :</div>
+        <div class="examples-list">
+          <button onclick="fillEx('SVT','La photosynthèse est le processus par lequel les plantes vertes fabriquent leur nourriture à partir de la lumière solaire, du CO2 et de l\'eau. Ce processus se déroule dans les chloroplastes, qui contiennent la chlorophylle. La réaction est : 6CO2 + 6H2O + lumière → C6H12O6 + 6O2. Il y a deux phases : la phase claire et le cycle de Calvin. Les facteurs limitants sont la lumière, le CO2 et la température.')">🌿 SVT — Photosynthèse</button>
+          <button onclick="fillEx('Histoire','La Révolution française débute en 1789. Le 14 juillet, prise de la Bastille. Août 1789 : Déclaration des droits de l\'homme. 1792 : Première République. 1793 : Louis XVI guillotiné. 1793-1794 : La Terreur avec Robespierre. 1795 : Directoire. Novembre 1799 : Coup d\'état de Napoléon Bonaparte.')">⚔️ Histoire — Révolution française</button>
+          <button onclick="fillEx('Marketing','Le marketing mix repose sur les 4P : Produit (caractéristiques, cycle de vie), Prix (selon coûts et concurrence), Place (distribution directe ou indirecte), Promotion (publicité, digital, relations publiques). Les entreprises modernes ajoutent 3P : People (équipe), Process (processus de service), Physical evidence (preuve tangible).')">📊 Marketing — Les 4P</button>
+          <button onclick="fillEx('Python','En Python, une liste est mutable : ma_liste = [1,2,3]. Méthodes : append(), remove(), sort(), len(). Un dictionnaire est clé-valeur : {\"nom\":\"Alice\"}. Les compréhensions : [x**2 for x in range(10)]. Les tuples sont immuables : (1,2,3). Les sets contiennent des valeurs uniques : {1,2,3}.')">🐍 Python — Structures de données</button>
+        </div>
+      </div>
+      <div id="error-box" class="error-box" style="display:none"></div>
+      <button id="gen-btn" class="gen-btn" onclick="generate()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Générer avec l'IA
+      </button>
+    </div>
+
+    <!-- RÉSULTAT -->
+    <div class="step-card result-card" id="result-card" style="display:none">
+      <div class="result-header">
+        <div class="result-title" id="result-title">📄 Fiche de révision</div>
+        <div class="result-actions">
+          <button onclick="copyResult()">📋 Copier</button>
+          <button onclick="downloadResult()">⬇️ Télécharger</button>
+          <button onclick="resetGen()">↩ Nouveau</button>
+        </div>
+      </div>
+      <div id="result-spinner" class="result-spinner">
+        <div class="spinner"></div>
+        <p>L'IA analyse ton cours et génère ton contenu…</p>
+      </div>
+      <pre id="result-content" class="result-content" style="display:none"></pre>
+    </div>
+
+    <!-- HISTORIQUE -->
+    <div id="history-section" style="display:none">
+      <div class="history-title">📂 Historique de session</div>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">StudyAI</span>
+    <span>Propulsé par Claude d'Anthropic · Fait pour les étudiants 🎓</span>
+    <span>© 2025 StudyAI</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
