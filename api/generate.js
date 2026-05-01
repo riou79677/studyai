@@ -44,23 +44,23 @@ Format OBLIGATOIRE pour chaque question :
    B) [proposition]
    C) [proposition]
    D) [proposition]
-✅ Réponse : [lettre] — [explication détaillée de pourquoi c'est la bonne réponse]
+✅ Réponse : [lettre] — [explication détaillée]
 💡 Astuce : [moyen de retenir la bonne réponse]
 
-Niveaux : 2 faciles, 2 moyennes, 2 difficiles. Les mauvaises réponses doivent être plausibles.`,
+Niveaux : 2 faciles, 2 moyennes, 2 difficiles.`,
 
-flash: `Tu es un expert en mémorisation. Génère 10 FLASHCARDS complètes à partir du cours.
+    flash: `Tu es un expert en mémorisation. Génère 10 FLASHCARDS complètes à partir du cours.
 
 Format OBLIGATOIRE :
 🃏 CARTE [N]
 RECTO : [question courte et précise]
-VERSO : [réponse complète et claire en 2-3 lignes maximum]
-💡 Astuce mémo : [moyen mnémotechnique concret pour retenir]
+VERSO : [réponse complète en 2-3 lignes maximum]
+💡 Astuce mémo : [moyen mnémotechnique concret]
 ---
 
-Va du plus simple au plus complexe. Les rectos doivent être de vraies questions de compréhension.`,
+Va du plus simple au plus complexe.`,
 
-mindmap: `Tu es un expert en organisation des connaissances. Génère un MIND MAP textuel complet.
+    mindmap: `Tu es un expert en organisation des connaissances. Génère un MIND MAP textuel complet.
 
 Format OBLIGATOIRE :
 🧠 [CONCEPT CENTRAL EN MAJUSCULES]
@@ -78,11 +78,9 @@ Format OBLIGATOIRE :
 │   └── → [Sous-concept]
 │
 └── 🔴 BRANCHE 4 : [Thème majeur]
-    └── → [Sous-concept]
+    └── → [Sous-concept]`,
 
-Couvre tous les concepts importants du cours.`,
-
-questions: `Tu es un professeur bienveillant. Génère 6 QUESTIONS OUVERTES de révision.
+    questions: `Tu es un professeur bienveillant. Génère 6 QUESTIONS OUVERTES de révision.
 
 Format OBLIGATOIRE :
 💬 QUESTION [N] — [Niveau : Basique / Intermédiaire / Avancé]
@@ -99,7 +97,7 @@ Format OBLIGATOIRE :
 
 2 basiques, 2 intermédiaires, 2 avancées.`,
 
-chrono: `Tu es un expert en organisation. Génère une CHRONOLOGIE ou PLAN STRUCTURÉ détaillé.
+    chrono: `Tu es un expert en organisation. Génère une CHRONOLOGIE ou PLAN STRUCTURÉ détaillé.
 
 Format OBLIGATOIRE :
 📅 [TITRE DU SUJET]
@@ -116,8 +114,9 @@ Format OBLIGATOIRE :
 
 ⚡ POINTS CLÉS À RETENIR :
 - [Point 1]
-- [Point 2]`,
-  chrono: ``
+- [Point 2]`
+  };
+
   const langMap = { fr: 'français', en: 'English', es: 'Español', de: 'Deutsch' };
   const langInstruction = language === 'auto'
     ? 'Réponds dans la même langue que le cours fourni.'
@@ -133,7 +132,7 @@ Format OBLIGATOIRE :
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1200,
+        max_tokens: 1500,
         system: `Tu es StudyAI, un assistant pédagogique expert. ${langInstruction} Sois précis, structuré et pédagogique.`,
         messages: [{
           role: 'user',
