@@ -36,65 +36,87 @@ Format OBLIGATOIRE :
 
 Sois exhaustif, précis et pédagogique. Utilise des exemples concrets.`,
 
-    quiz: `Tu es un professeur expert. Génère un QUIZ QCM de 5 questions à partir du cours.
+    quiz: `Tu es un professeur expert. Génère un QUIZ de 6 questions variées à partir du cours.
 
-Format OBLIGATOIRE :
-❓ Question N : [question]
+Format OBLIGATOIRE pour chaque question :
+❓ Question N : [question claire et précise]
    A) [proposition]
    B) [proposition]
    C) [proposition]
    D) [proposition]
-✅ Réponse : [lettre] — [explication courte]
+✅ Réponse : [lettre] — [explication détaillée de pourquoi c'est la bonne réponse]
+💡 Astuce : [moyen de retenir la bonne réponse]
 
-Varie les niveaux : 2 faciles, 2 moyennes, 1 difficile.`,
+Niveaux : 2 faciles, 2 moyennes, 2 difficiles. Les mauvaises réponses doivent être plausibles.`,
 
-    flash: `Tu es un expert en mémorisation. Génère 8 FLASHCARDS à partir du cours.
+flash: `Tu es un expert en mémorisation. Génère 10 FLASHCARDS complètes à partir du cours.
 
 Format OBLIGATOIRE :
 🃏 CARTE [N]
 RECTO : [question courte et précise]
-VERSO : [réponse concise, max 2-3 lignes]
-💡 Astuce mémo : [moyen mnémotechnique]
----`,
+VERSO : [réponse complète et claire en 2-3 lignes maximum]
+💡 Astuce mémo : [moyen mnémotechnique concret pour retenir]
+---
 
-    mindmap: `Tu es un expert en visualisation. Génère un MIND MAP textuel structuré.
+Va du plus simple au plus complexe. Les rectos doivent être de vraies questions de compréhension.`,
+
+mindmap: `Tu es un expert en organisation des connaissances. Génère un MIND MAP textuel complet.
 
 Format OBLIGATOIRE :
-🧠 [CONCEPT CENTRAL]
+🧠 [CONCEPT CENTRAL EN MAJUSCULES]
 │
 ├── 🔵 BRANCHE 1 : [Thème majeur]
+│   ├── → [Sous-concept avec explication courte]
+│   ├── → [Sous-concept avec explication courte]
+│   └── → [Sous-concept avec explication courte]
+│
+├── 🟣 BRANCHE 2 : [Thème majeur]
 │   ├── → [Sous-concept]
 │   └── → [Sous-concept]
 │
-├── 🟣 BRANCHE 2 : [Thème majeur]
+├── 🟡 BRANCHE 3 : [Thème majeur]
 │   └── → [Sous-concept]
 │
-└── 🔴 BRANCHE 3 : [Thème majeur]
-    └── → [Sous-concept]`,
+└── 🔴 BRANCHE 4 : [Thème majeur]
+    └── → [Sous-concept]
 
-    questions: `Tu es un professeur bienveillant. Génère 6 QUESTIONS OUVERTES de révision.
+Couvre tous les concepts importants du cours.`,
 
-Format OBLIGATOIRE :
-💬 QUESTION [N] — [Niveau : Basique/Intermédiaire/Avancé]
-[Question complète]
-
-📝 ÉLÉMENTS DE RÉPONSE :
-• [Point 1]
-• [Point 2]
-⏱ Temps estimé : [X min]
----`,
-
-    chrono: `Tu es un expert en organisation. Génère une CHRONOLOGIE détaillée.
+questions: `Tu es un professeur bienveillant. Génère 6 QUESTIONS OUVERTES de révision.
 
 Format OBLIGATOIRE :
-📅 CHRONOLOGIE — [SUJET]
+💬 QUESTION [N] — [Niveau : Basique / Intermédiaire / Avancé]
+[Question complète et précise]
 
-🕐 [DATE/PÉRIODE] ━━━ [ÉVÉNEMENT]
-   └ [Importance de cet événement]
+📝 ÉLÉMENTS DE RÉPONSE ATTENDUS :
+- [Point clé 1]
+- [Point clé 2]
+- [Point clé 3]
+
+⏱ Temps estimé : [X minutes]
+💎 Conseil : [comment aborder cette question]
+---
+
+2 basiques, 2 intermédiaires, 2 avancées.`,
+
+chronologie: `Tu es un expert en organisation. Génère une CHRONOLOGIE ou PLAN STRUCTURÉ détaillé.
+
+Format OBLIGATOIRE :
+📅 [TITRE DU SUJET]
+
+🕐 [DATE/ÉTAPE 1] ━━━ [Événement ou concept]
+   └ [Explication de l'importance — 2 lignes]
+
+🕑 [DATE/ÉTAPE 2] ━━━ [Événement ou concept]
+   └ [Explication]
 
 📊 RÉSUMÉ DES GRANDES PÉRIODES :
-• [Période] : [résumé]`
-  };
+- [Période/Phase 1] : [résumé]
+- [Période/Phase 2] : [résumé]
+
+⚡ POINTS CLÉS À RETENIR :
+- [Point 1]
+- [Point 2]`,
 
   const langMap = { fr: 'français', en: 'English', es: 'Español', de: 'Deutsch' };
   const langInstruction = language === 'auto'
