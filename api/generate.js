@@ -13,18 +13,28 @@ export default async function handler(req, res) {
   }
 
   const prompts = {
-    fiche: `Tu es un expert en pédagogie. À partir du cours ci-dessous, génère une FICHE DE RÉVISION structurée.
+    fiche: `Tu es un expert en pédagogie. À partir du cours ci-dessous, génère une FICHE DE RÉVISION complète, structurée et détaillée.
 
 Format OBLIGATOIRE :
+
 📚 TITRE DU SUJET
 
-🎯 POINTS CLÉS (5-8 points essentiels en bullet points avec titres en gras)
+🎯 POINTS CLÉS
+(8-10 points essentiels, chacun avec un titre en gras suivi d'une explication claire de 2-3 lignes)
 
-📖 DÉFINITIONS IMPORTANTES (termes clés avec définition concise)
+📖 DÉFINITIONS IMPORTANTES
+(Tous les termes clés du cours avec leur définition précise et un exemple si possible)
 
-⚡ À RETENIR ABSOLUMENT (3-5 points ultra-importants)
+⚡ À RETENIR ABSOLUMENT
+(5-7 points critiques à ne jamais oublier, formulés de façon mémorable)
 
-🔗 LIENS & CONNEXIONS (connexions avec d'autres notions)`,
+🔗 LIENS & CONNEXIONS
+(Comment ce chapitre s'articule avec d'autres notions du cours)
+
+❓ QUESTIONS PROBABLES À L'EXAMEN
+(3-5 questions typiques avec une courte réponse)
+
+Sois exhaustif, précis et pédagogique. Utilise des exemples concrets.`,
 
     quiz: `Tu es un professeur expert. Génère un QUIZ QCM de 5 questions à partir du cours.
 
