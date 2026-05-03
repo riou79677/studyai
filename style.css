@@ -208,6 +208,7 @@ footer {
   main { padding: 2rem 1rem 3rem; }
   .format-grid { grid-template-columns: repeat(3, 1fr); }
   .nav-right .plan-badge { display: none; }
+.nav-login { display: inline-block; }
   .result-actions button:nth-child(3) { display: none; }
 }
 /* PRICING SECTION */
