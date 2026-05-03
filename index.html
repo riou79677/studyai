@@ -20,9 +20,8 @@
   </div>
   <div class="nav-right">
     <span class="plan-badge">Plan Starter · <span id="tok-nav">5</span> générations restantes</span>
-    <button onclick="openAuthModal()" class="nav-login" id="nav-login-btn">Se connecter</button>
-<button onclick="openAuthModal()" class="nav-upgrade" style="background:linear-gradient(135deg,#7c6dfa,#f472b6);border:none;color:white;">Créer un compte</button>
-    <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="nav-upgrade">Passer à Pro →</a>
+    <button id="nav-login-btn" class="nav-login">Se connecter</button>
+    <a href="LIEN_STRIPE_PRO_MENSUEL" target="_blank" class="nav-upgrade">Passer à Pro →</a>
   </div>
 </nav>
 
@@ -34,41 +33,33 @@
 
   <div class="generator">
 
-    <!-- ÉTAPE 1 : FORMAT -->
     <div class="step-card">
       <div class="step-label">01 — Choisis ton format</div>
       <div class="format-grid">
-        <div class="fmt active" data-fmt="fiche" data-icon="📄" data-name="Fiche de révision" onclick="selectFmt(this)">
-          <span class="fmt-icon">📄</span>
-          <span class="fmt-name">Fiche</span>
+        <div class="fmt active" data-fmt="fiche" data-icon="📄" data-name="Fiche de révision">
+          <span class="fmt-icon">📄</span><span class="fmt-name">Fiche</span>
         </div>
-        <div class="fmt" data-fmt="quiz" data-icon="✅" data-name="Quiz QCM" onclick="selectFmt(this)">
-          <span class="fmt-icon">✅</span>
-          <span class="fmt-name">Quiz QCM</span>
+        <div class="fmt" data-fmt="quiz" data-icon="✅" data-name="Quiz QCM">
+          <span class="fmt-icon">✅</span><span class="fmt-name">Quiz QCM</span>
         </div>
-        <div class="fmt" data-fmt="flash" data-icon="🃏" data-name="Flashcards" onclick="selectFmt(this)">
-          <span class="fmt-icon">🃏</span>
-          <span class="fmt-name">Flashcards</span>
+        <div class="fmt" data-fmt="flash" data-icon="🃏" data-name="Flashcards">
+          <span class="fmt-icon">🃏</span><span class="fmt-name">Flashcards</span>
         </div>
-        <div class="fmt" data-fmt="mindmap" data-icon="🧠" data-name="Mind Map" onclick="selectFmt(this)">
-          <span class="fmt-icon">🧠</span>
-          <span class="fmt-name">Mind Map</span>
+        <div class="fmt" data-fmt="mindmap" data-icon="🧠" data-name="Mind Map">
+          <span class="fmt-icon">🧠</span><span class="fmt-name">Mind Map</span>
         </div>
-        <div class="fmt" data-fmt="questions" data-icon="💬" data-name="Questions ouvertes" onclick="selectFmt(this)">
-          <span class="fmt-icon">💬</span>
-          <span class="fmt-name">Questions</span>
+        <div class="fmt" data-fmt="questions" data-icon="💬" data-name="Questions ouvertes">
+          <span class="fmt-icon">💬</span><span class="fmt-name">Questions</span>
         </div>
-        <div class="fmt" data-fmt="chrono" data-icon="📅" data-name="Chronologie" onclick="selectFmt(this)">
-          <span class="fmt-icon">📅</span>
-          <span class="fmt-name">Chronologie</span>
+        <div class="fmt" data-fmt="chrono" data-icon="📅" data-name="Chronologie">
+          <span class="fmt-icon">📅</span><span class="fmt-name">Chronologie</span>
         </div>
       </div>
     </div>
 
-    <!-- ÉTAPE 2 : COURS -->
     <div class="step-card">
       <div class="step-label">02 — Colle ton cours</div>
-      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours... PDF, texte, notes manuscrites retranscrites — tout fonctionne !&#10;&#10;Plus tu donnes de contenu, meilleur sera le résultat."></textarea>
+      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours..."></textarea>
       <div class="input-footer">
         <span id="char-count">0 caractères</span>
         <select id="lang-sel">
@@ -82,27 +73,26 @@
       <div class="examples">
         <div class="examples-label">Essaie avec un exemple :</div>
         <div class="examples-list">
-          <button onclick="fillEx('SVT','La photosynthèse est le processus par lequel les plantes vertes fabriquent leur nourriture à partir de la lumière solaire, du CO2 et de l\'eau. Ce processus se déroule dans les chloroplastes, qui contiennent la chlorophylle. La réaction est : 6CO2 + 6H2O + lumière → C6H12O6 + 6O2. Il y a deux phases : la phase claire et le cycle de Calvin. Les facteurs limitants sont la lumière, le CO2 et la température.')">🌿 SVT — Photosynthèse</button>
-          <button onclick="fillEx('Histoire','La Révolution française débute en 1789. Le 14 juillet, prise de la Bastille. Août 1789 : Déclaration des droits de l\'homme. 1792 : Première République. 1793 : Louis XVI guillotiné. 1793-1794 : La Terreur avec Robespierre. 1795 : Directoire. Novembre 1799 : Coup d\'état de Napoléon Bonaparte.')">⚔️ Histoire — Révolution française</button>
-          <button onclick="fillEx('Marketing','Le marketing mix repose sur les 4P : Produit (caractéristiques, cycle de vie), Prix (selon coûts et concurrence), Place (distribution directe ou indirecte), Promotion (publicité, digital, relations publiques). Les entreprises modernes ajoutent 3P : People (équipe), Process (processus de service), Physical evidence (preuve tangible).')">📊 Marketing — Les 4P</button>
-          <button onclick="fillEx('Python','En Python, une liste est mutable : ma_liste = [1,2,3]. Méthodes : append(), remove(), sort(), len(). Un dictionnaire est clé-valeur : {\"nom\":\"Alice\"}. Les compréhensions : [x**2 for x in range(10)]. Les tuples sont immuables : (1,2,3). Les sets contiennent des valeurs uniques : {1,2,3}.')">🐍 Python — Structures de données</button>
+          <button id="ex-svt">🌿 SVT — Photosynthèse</button>
+          <button id="ex-histoire">⚔️ Histoire — Révolution française</button>
+          <button id="ex-marketing">📊 Marketing — Les 4P</button>
+          <button id="ex-python">🐍 Python — Structures de données</button>
         </div>
       </div>
       <div id="error-box" class="error-box" style="display:none"></div>
-      <button id="gen-btn" class="gen-btn" onclick="generate()">
+      <button id="gen-btn" class="gen-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         Générer avec l'IA
       </button>
     </div>
 
-    <!-- RÉSULTAT -->
     <div class="step-card result-card" id="result-card" style="display:none">
       <div class="result-header">
         <div class="result-title" id="result-title">📄 Fiche de révision</div>
         <div class="result-actions">
-          <button onclick="copyResult()">📋 Copier</button>
-          <button onclick="downloadResult()">⬇️ Télécharger</button>
-          <button onclick="resetGen()">↩ Nouveau</button>
+          <button id="copy-btn">📋 Copier</button>
+          <button id="download-btn">⬇️ Télécharger</button>
+          <button id="reset-btn">↩ Nouveau</button>
         </div>
       </div>
       <div id="result-spinner" class="result-spinner">
@@ -112,7 +102,6 @@
       <pre id="result-content" class="result-content" style="display:none"></pre>
     </div>
 
-    <!-- HISTORIQUE -->
     <div id="history-section" style="display:none">
       <div class="history-title">📂 Historique de session</div>
       <div id="history-list"></div>
@@ -121,16 +110,12 @@
   </div>
 </main>
 
-<!-- SECTION PRICING -->
 <section class="pricing-section">
   <div class="pricing-inner">
     <div class="pricing-eyebrow">Tarifs</div>
     <h2 class="pricing-title">Simple. Transparent.<br>Fait pour les étudiants.</h2>
     <p class="pricing-sub">Commence gratuit. Upgrade quand tu en as besoin.</p>
-
     <div class="pricing-grid">
-
-      <!-- STARTER -->
       <div class="pricing-card">
         <div class="plan-name">Starter</div>
         <div class="plan-price">0<span class="plan-cur">€</span></div>
@@ -142,10 +127,8 @@
           <li>✓ Quiz QCM basiques</li>
           <li>✓ 1 format par session</li>
         </ul>
-        <button class="plan-btn plan-btn-ghost" onclick="document.getElementById('course-input').focus()">Commencer gratuitement</button>
+        <button class="plan-btn plan-btn-ghost" id="starter-btn">Commencer gratuitement</button>
       </div>
-
-      <!-- PRO -->
       <div class="pricing-card pricing-card-pop">
         <div class="pop-badge">⭐ Le plus populaire</div>
         <div class="plan-name">Pro</div>
@@ -156,17 +139,14 @@
           <li>✓ 50 générations IA / mois</li>
           <li>✓ Tous les formats</li>
           <li>✓ Téléchargement du résultat</li>
-          <li>✓ Historique de session</li>
           <li>✓ IA multilingue</li>
           <li>✓ Support prioritaire</li>
         </ul>
         <div class="plan-btns">
-          <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="plan-btn plan-btn-grad">Essayer 7 jours gratuits</a>
-          <a href="https://buy.stripe.com/bJe5kE1idb7t47ReUK43S01" target="_blank" class="plan-btn plan-btn-outline">Annuel — 39,99€/an</a>
+          <a href="LIEN_STRIPE_PRO_MENSUEL" target="_blank" class="plan-btn plan-btn-grad">Essayer 7 jours gratuits</a>
+          <a href="LIEN_STRIPE_PRO_ANNUEL" target="_blank" class="plan-btn plan-btn-outline">Annuel — 39,99€/an</a>
         </div>
       </div>
-
-      <!-- ULTIMATE -->
       <div class="pricing-card pricing-card-ult">
         <div class="plan-name">Ultimate</div>
         <div class="plan-price">10,99<span class="plan-cur">€</span></div>
@@ -177,16 +157,14 @@
           <li>✓ Tout ce qui est dans Pro</li>
           <li>✓ Mode examen chronométré</li>
           <li>✓ Suivi de progression</li>
-          <li>✓ Partage communauté</li>
           <li>✓ Historique illimité</li>
           <li>✓ Accès anticipé nouveautés</li>
         </ul>
         <div class="plan-btns">
-          <a href="https://buy.stripe.com/6oUdRa0e95N96fZ4g643S02" target="_blank" class="plan-btn plan-btn-gold">Essayer 7 jours gratuits</a>
-          <a href="https://buy.stripe.com/eVqbJ22mhfnJbAj5ka43S04" target="_blank" class="plan-btn plan-btn-outline">Annuel — 79,99€/an</a>
+          <a href="LIEN_STRIPE_ULTIMATE_MENSUEL" target="_blank" class="plan-btn plan-btn-gold">Essayer 7 jours gratuits</a>
+          <a href="LIEN_STRIPE_ULTIMATE_ANNUEL" target="_blank" class="plan-btn plan-btn-outline">Annuel — 79,99€/an</a>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -199,31 +177,255 @@
   </div>
 </footer>
 
+<!-- MODAL AUTH -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+  <div class="modal-box">
+    <button id="modal-close-btn" style="position:absolute;top:1rem;right:1rem;background:var(--surface);border:1px solid var(--border);width:32px;height:32px;border-radius:50%;cursor:pointer;color:var(--text2);font-size:1rem;">✕</button>
+    <h2 id="auth-title">Créer mon compte</h2>
+    <p id="auth-sub" style="font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem;">Commence gratuitement — aucune carte requise.</p>
+    <div class="modal-toggle">
+      <button class="mtab active" id="tab-signup">Inscription</button>
+      <button class="mtab" id="tab-login">Connexion</button>
+    </div>
+    <div class="mfield">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="ton@email.com">
+    </div>
+    <div class="mfield">
+      <label>Mot de passe</label>
+      <input type="password" id="auth-password" placeholder="••••••••">
+    </div>
+    <div id="auth-error" style="color:#f472b6;font-size:0.8rem;margin-bottom:0.5rem;display:none"></div>
+    <div id="auth-success" style="color:#4ade80;font-size:0.8rem;margin-bottom:0.5rem;display:none"></div>
+    <button class="modal-action" id="auth-submit-btn">Créer mon compte</button>
+    <p class="modal-note">En continuant, tu acceptes nos CGU & politique de confidentialité.</p>
+  </div>
+</div>
+
 <script>
-function openAuthModal() {
+// ── VARIABLES GLOBALES ──
+var currentFormat = 'fiche';
+var currentFormatName = 'Fiche de révision';
+var currentFormatIcon = '📄';
+var tokensLeft = 5;
+var lastResult = '';
+var sessionHistory = [];
+var authMode = 'signup';
+
+// ── MODAL AUTH ──
+document.getElementById('nav-login-btn').addEventListener('click', function() {
   document.getElementById('auth-modal').style.display = 'flex';
-}
-function closeAuthModal() {
+});
+
+document.getElementById('starter-btn').addEventListener('click', function() {
+  document.getElementById('auth-modal').style.display = 'flex';
+});
+
+document.getElementById('modal-close-btn').addEventListener('click', function() {
   document.getElementById('auth-modal').style.display = 'none';
-}
-function closeModalOutside(e) {
-  if (e.target.id === 'auth-modal') closeAuthModal();
-}
-function setAuthMode(mode, btn) {
-  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  if (mode === 'signup') {
-    document.getElementById('auth-title').textContent = 'Créer mon compte';
-    document.getElementById('auth-btn').textContent = 'Créer mon compte';
-  } else {
-    document.getElementById('auth-title').textContent = 'Bon retour !';
-    document.getElementById('auth-btn').textContent = 'Se connecter';
+});
+
+document.getElementById('auth-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.style.display = 'none';
+});
+
+document.getElementById('tab-signup').addEventListener('click', function() {
+  authMode = 'signup';
+  document.getElementById('tab-signup').classList.add('active');
+  document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('auth-title').textContent = 'Créer mon compte';
+  document.getElementById('auth-submit-btn').textContent = 'Créer mon compte';
+});
+
+document.getElementById('tab-login').addEventListener('click', function() {
+  authMode = 'login';
+  document.getElementById('tab-login').classList.add('active');
+  document.getElementById('tab-signup').classList.remove('active');
+  document.getElementById('auth-title').textContent = 'Bon retour !';
+  document.getElementById('auth-submit-btn').textContent = 'Se connecter';
+});
+
+document.getElementById('auth-submit-btn').addEventListener('click', async function() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  var errBox = document.getElementById('auth-error');
+  var successBox = document.getElementById('auth-success');
+
+  errBox.style.display = 'none';
+  successBox.style.display = 'none';
+
+  if (!email || !password) {
+    errBox.textContent = 'Remplis tous les champs !';
+    errBox.style.display = 'block';
+    return;
   }
+
+  this.textContent = 'Chargement...';
+  this.disabled = true;
+
+  try {
+    var url = 'https://qyjqtjrqnlbgtxvnjvnk.supabase.co/auth/v1/' + (authMode === 'signup' ? 'signup' : 'token?grant_type=password');
+    var response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'SUPABASE_ANON_KEY'
+      },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    var data = await response.json();
+
+    if (data.error || data.error_description) {
+      errBox.textContent = authMode === 'signup' ? 'Erreur lors de la création du compte.' : 'Email ou mot de passe incorrect.';
+      errBox.style.display = 'block';
+    } else {
+      successBox.textContent = authMode === 'signup' ? '✅ Compte créé ! Bienvenue sur StudyAI !' : '✅ Connecté avec succès !';
+      successBox.style.display = 'block';
+      document.getElementById('nav-login-btn').textContent = '👤 ' + email.split('@')[0];
+      setTimeout(function() {
+        document.getElementById('auth-modal').style.display = 'none';
+      }, 2000);
+    }
+  } catch(e) {
+    errBox.textContent = 'Une erreur est survenue, réessaie.';
+    errBox.style.display = 'block';
+  }
+
+  this.disabled = false;
+  this.textContent = authMode === 'signup' ? 'Créer mon compte' : 'Se connecter';
+});
+
+// ── FORMAT ──
+document.querySelectorAll('.fmt').forEach(function(el) {
+  el.addEventListener('click', function() {
+    document.querySelectorAll('.fmt').forEach(function(f) { f.classList.remove('active'); });
+    el.classList.add('active');
+    currentFormat = el.dataset.fmt;
+    currentFormatName = el.dataset.name;
+    currentFormatIcon = el.dataset.icon;
+  });
+});
+
+// ── EXEMPLES ──
+document.getElementById('course-input').addEventListener('input', function() {
+  document.getElementById('char-count').textContent = this.value.length + ' caractères';
+});
+
+document.getElementById('ex-svt').addEventListener('click', function() {
+  document.getElementById('course-input').value = "La photosynthèse est le processus par lequel les plantes vertes fabriquent leur nourriture à partir de la lumière solaire, du CO2 et de l'eau. Ce processus se déroule dans les chloroplastes, qui contiennent la chlorophylle. La réaction est : 6CO2 + 6H2O + lumière → C6H12O6 + 6O2. Il y a deux phases : la phase claire et le cycle de Calvin.";
+  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+});
+
+document.getElementById('ex-histoire').addEventListener('click', function() {
+  document.getElementById('course-input').value = "La Révolution française débute en 1789. Le 14 juillet, prise de la Bastille. Août 1789 : Déclaration des droits de l'homme. 1792 : Première République. 1793 : Louis XVI guillotiné. 1793-1794 : La Terreur avec Robespierre. 1795 : Directoire. Novembre 1799 : Coup d'état de Napoléon Bonaparte.";
+  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+});
+
+document.getElementById('ex-marketing').addEventListener('click', function() {
+  document.getElementById('course-input').value = "Le marketing mix repose sur les 4P : Produit (caractéristiques, cycle de vie), Prix (selon coûts et concurrence), Place (distribution directe ou indirecte), Promotion (publicité, digital, relations publiques). Les entreprises modernes ajoutent 3P : People, Process, Physical evidence.";
+  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+});
+
+document.getElementById('ex-python').addEventListener('click', function() {
+  document.getElementById('course-input').value = "En Python, une liste est mutable : ma_liste = [1,2,3]. Méthodes : append(), remove(), sort(), len(). Un dictionnaire est clé-valeur. Les compréhensions : [x**2 for x in range(10)]. Les tuples sont immuables. Les sets contiennent des valeurs uniques.";
+  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+});
+
+// ── GÉNÉRATION ──
+document.getElementById('gen-btn').addEventListener('click', async function() {
+  var input = document.getElementById('course-input').value.trim();
+  var errBox = document.getElementById('error-box');
+  errBox.style.display = 'none';
+
+  if (!input) { errBox.textContent = '⚠️ Colle d\'abord le contenu de ton cours !'; errBox.style.display = 'block'; return; }
+  if (input.length < 30) { errBox.textContent = '⚠️ Le cours est trop court.'; errBox.style.display = 'block'; return; }
+  if (tokensLeft <= 0) { errBox.textContent = '⚠️ Tu as utilisé tes 5 générations gratuites. Passe à Pro !'; errBox.style.display = 'block'; return; }
+
+  var btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = 'Génération en cours…';
+
+  var resultCard = document.getElementById('result-card');
+  var spinner = document.getElementById('result-spinner');
+  var content = document.getElementById('result-content');
+  resultCard.style.display = 'block';
+  spinner.style.display = 'flex';
+  content.style.display = 'none';
+  resultCard.scrollIntoView({ behavior: 'smooth' });
+
+  try {
+    var response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course: input, format: currentFormat, language: document.getElementById('lang-sel').value })
+    });
+    var data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    lastResult = data.result;
+    content.textContent = data.result;
+    document.getElementById('result-title').textContent = currentFormatIcon + ' ' + currentFormatName;
+    spinner.style.display = 'none';
+    content.style.display = 'block';
+    tokensLeft--;
+    document.getElementById('tok-nav').textContent = tokensLeft;
+
+    sessionHistory.unshift({ icon: currentFormatIcon, name: currentFormatName, preview: input.substring(0, 55) + '…', result: data.result });
+    if (sessionHistory.length > 6) sessionHistory.pop();
+    renderHistory();
+
+  } catch(e) {
+    spinner.style.display = 'none';
+    content.textContent = '⚠️ Une erreur est survenue : ' + e.message;
+    content.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Générer avec l\'IA';
+});
+
+document.getElementById('copy-btn').addEventListener('click', function() {
+  navigator.clipboard.writeText(lastResult).then(function() {
+    document.getElementById('copy-btn').textContent = '✅ Copié !';
+    setTimeout(function() { document.getElementById('copy-btn').textContent = '📋 Copier'; }, 2000);
+  });
+});
+
+document.getElementById('download-btn').addEventListener('click', function() {
+  var blob = new Blob([lastResult], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'StudyAI_' + currentFormatName + '.txt';
+  a.click();
+});
+
+document.getElementById('reset-btn').addEventListener('click', function() {
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('course-input').value = '';
+  document.getElementById('char-count').textContent = '0 caractères';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function renderHistory() {
+  var section = document.getElementById('history-section');
+  var list = document.getElementById('history-list');
+  if (sessionHistory.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = sessionHistory.map(function(h, i) {
+    return '<div class="hist-item" onclick="loadHistory(' + i + ')"><span class="hist-fmt">' + h.icon + '</span><span class="hist-preview">' + h.name + ' — ' + h.preview + '</span></div>';
+  }).join('');
 }
-async function handleAuth() {
-  alert('Système d\'authentification en cours de configuration !');
+
+function loadHistory(i) {
+  var h = sessionHistory[i];
+  document.getElementById('result-content').textContent = h.result;
+  document.getElementById('result-title').textContent = h.icon + ' ' + h.name;
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('result-spinner').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  lastResult = h.result;
 }
 </script>
-<script type="module" src="app.js"></script>
+
 </body>
 </html>
