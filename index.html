@@ -199,6 +199,31 @@
   </div>
 </footer>
 
-<script src="app.js"></script>
+<script>
+function openAuthModal() {
+  document.getElementById('auth-modal').style.display = 'flex';
+}
+function closeAuthModal() {
+  document.getElementById('auth-modal').style.display = 'none';
+}
+function closeModalOutside(e) {
+  if (e.target.id === 'auth-modal') closeAuthModal();
+}
+function setAuthMode(mode, btn) {
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (mode === 'signup') {
+    document.getElementById('auth-title').textContent = 'Créer mon compte';
+    document.getElementById('auth-btn').textContent = 'Créer mon compte';
+  } else {
+    document.getElementById('auth-title').textContent = 'Bon retour !';
+    document.getElementById('auth-btn').textContent = 'Se connecter';
+  }
+}
+async function handleAuth() {
+  alert('Système d\'authentification en cours de configuration !');
+}
+</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
