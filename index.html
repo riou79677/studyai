@@ -6,6 +6,36 @@
 <title>StudyAI — Générateur de fiches IA</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+/* IMPORT FICHIER */
+.import-zone { margin-bottom: 0.8rem; }
+.import-btn-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+.import-btn {
+  background: var(--bg2);
+  border: 1.5px dashed var(--border2);
+  border-radius: 10px;
+  padding: 0.65rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--purple2);
+  cursor: pointer;
+  font-family: var(--font-b);
+  transition: all 0.2s;
+}
+.import-btn:hover { border-color: var(--purple); background: rgba(124,109,250,0.06); }
+.import-or { font-size: 0.8rem; color: var(--text3); }
+.import-hint { font-size: 0.8rem; color: var(--text3); }
+.file-name {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--cyan);
+  padding: 0.3rem 0.8rem;
+  background: rgba(34,211,238,0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(34,211,238,0.2);
+  display: inline-block;
+}
+</style>
 </head>
 <body>
 
@@ -21,7 +51,7 @@
   <div class="nav-right">
     <span class="plan-badge">Plan Starter · <span id="tok-nav">5</span> générations restantes</span>
     <button id="nav-login-btn" class="nav-login">Se connecter</button>
-    <a href="LIEN_STRIPE_PRO_MENSUEL" target="_blank" class="nav-upgrade">Passer à Pro →</a>
+    <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="nav-upgrade">Passer à Pro →</a>
   </div>
 </nav>
 
@@ -59,7 +89,19 @@
 
     <div class="step-card">
       <div class="step-label">02 — Colle ton cours</div>
-      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours..."></textarea>
+      <!-- IMPORT PDF -->
+      <div class="import-zone" id="import-zone">
+        <input type="file" id="file-input" accept=".pdf,.txt,.doc,.docx" style="display:none">
+        <div class="import-btn-row">
+          <button class="import-btn" id="import-file-btn">
+            📎 Importer un fichier (PDF, Word, TXT)
+          </button>
+          <span class="import-or">ou</span>
+          <span class="import-hint">colle ton cours ci-dessous</span>
+        </div>
+        <div id="file-name" class="file-name" style="display:none"></div>
+      </div>
+      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours, ou importe un fichier ci-dessus..."></textarea>
       <div class="input-footer">
         <span id="char-count">0 caractères</span>
         <select id="lang-sel">
@@ -69,15 +111,6 @@
           <option value="es">🇪🇸 Español</option>
           <option value="de">🇩🇪 Deutsch</option>
         </select>
-      </div>
-      <div class="examples">
-        <div class="examples-label">Essaie avec un exemple :</div>
-        <div class="examples-list">
-          <button id="ex-svt">🌿 SVT — Photosynthèse</button>
-          <button id="ex-histoire">⚔️ Histoire — Révolution française</button>
-          <button id="ex-marketing">📊 Marketing — Les 4P</button>
-          <button id="ex-python">🐍 Python — Structures de données</button>
-        </div>
       </div>
       <div id="error-box" class="error-box" style="display:none"></div>
       <button id="gen-btn" class="gen-btn">
@@ -132,7 +165,7 @@
       <div class="pricing-card pricing-card-pop">
         <div class="pop-badge">⭐ Le plus populaire</div>
         <div class="plan-name">Pro</div>
-        <div class="plan-price">4,99<span class="plan-cur">€</span></div>
+        <div class="plan-price">5,99<span class="plan-cur">€</span></div>
         <div class="plan-freq">par mois · ou <b>39,99€/an</b> (−44%)</div>
         <div class="plan-desc">Pour les étudiants sérieux qui veulent tout maîtriser.</div>
         <ul class="plan-feats">
@@ -282,27 +315,6 @@ document.getElementById('auth-submit-btn').addEventListener('click', async funct
       successBox.textContent = authMode === 'signup' ? '✅ Compte créé ! Bienvenue sur StudyAI !' : '✅ Connecté avec succès !';
       successBox.style.display = 'block';
       document.getElementById('nav-login-btn').textContent = '👤 ' + email.split('@')[0];
-
-      // Récupérer le plan depuis Supabase
-      try {
-        var planResponse = await fetch('https://qyjqtjrqnlbgtxvnjvnk.supabase.co/rest/v1/users?email=eq.' + encodeURIComponent(email) + '&select=plan,generations_used,generations_limit', {
-          headers: {
-            'apikey': 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ',
-            'Authorization': 'Bearer SUPABASE_ANON_KEY'
-          }
-        });
-        var planData = await planResponse.json();
-        if (planData && planData[0]) {
-          var user = planData[0];
-          var planName = user.plan.charAt(0).toUpperCase() + user.plan.slice(1);
-          var remaining = user.generations_limit - user.generations_used;
-          document.querySelector('.plan-badge').innerHTML = 'Plan ' + planName + ' · <span id="tok-nav">' + remaining + '</span> générations restantes';
-          tokensLeft = remaining;
-        }
-      } catch(err) {
-        console.log('Erreur plan:', err);
-      }
-
       setTimeout(function() {
         document.getElementById('auth-modal').style.display = 'none';
       }, 2000);
@@ -332,24 +344,35 @@ document.getElementById('course-input').addEventListener('input', function() {
   document.getElementById('char-count').textContent = this.value.length + ' caractères';
 });
 
-document.getElementById('ex-svt').addEventListener('click', function() {
-  document.getElementById('course-input').value = "La photosynthèse est le processus par lequel les plantes vertes fabriquent leur nourriture à partir de la lumière solaire, du CO2 et de l'eau. Ce processus se déroule dans les chloroplastes, qui contiennent la chlorophylle. La réaction est : 6CO2 + 6H2O + lumière → C6H12O6 + 6O2. Il y a deux phases : la phase claire et le cycle de Calvin.";
-  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+// ── IMPORT FICHIER ──
+document.getElementById('import-file-btn').addEventListener('click', function() {
+  document.getElementById('file-input').click();
 });
 
-document.getElementById('ex-histoire').addEventListener('click', function() {
-  document.getElementById('course-input').value = "La Révolution française débute en 1789. Le 14 juillet, prise de la Bastille. Août 1789 : Déclaration des droits de l'homme. 1792 : Première République. 1793 : Louis XVI guillotiné. 1793-1794 : La Terreur avec Robespierre. 1795 : Directoire. Novembre 1799 : Coup d'état de Napoléon Bonaparte.";
-  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
-});
+document.getElementById('file-input').addEventListener('change', async function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
 
-document.getElementById('ex-marketing').addEventListener('click', function() {
-  document.getElementById('course-input').value = "Le marketing mix repose sur les 4P : Produit (caractéristiques, cycle de vie), Prix (selon coûts et concurrence), Place (distribution directe ou indirecte), Promotion (publicité, digital, relations publiques). Les entreprises modernes ajoutent 3P : People, Process, Physical evidence.";
-  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
-});
+  var fileNameEl = document.getElementById('file-name');
+  fileNameEl.textContent = '📄 ' + file.name + ' chargé';
+  fileNameEl.style.display = 'block';
 
-document.getElementById('ex-python').addEventListener('click', function() {
-  document.getElementById('course-input').value = "En Python, une liste est mutable : ma_liste = [1,2,3]. Méthodes : append(), remove(), sort(), len(). Un dictionnaire est clé-valeur. Les compréhensions : [x**2 for x in range(10)]. Les tuples sont immuables. Les sets contiennent des valeurs uniques.";
-  document.getElementById('char-count').textContent = document.getElementById('course-input').value.length + ' caractères';
+  // Lire le fichier texte
+  if (file.type === 'text/plain') {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('course-input').value = ev.target.result;
+      document.getElementById('char-count').textContent = ev.target.result.length + ' caractères';
+    };
+    reader.readAsText(file);
+  } else if (file.type === 'application/pdf') {
+    // Pour les PDF on informe l'utilisateur
+    document.getElementById('course-input').value = '';
+    document.getElementById('course-input').placeholder = 'PDF détecté : ' + file.name + '\n\nPour l\'instant, copie-colle le texte de ton PDF ici. Le support natif des PDF arrive bientôt !';
+    fileNameEl.textContent = '⚠️ PDF détecté — colle le texte ci-dessous pour l\'instant';
+  } else {
+    fileNameEl.textContent = '⚠️ Format non supporté — utilise TXT ou copie-colle ton texte';
+  }
 });
 
 // ── GÉNÉRATION ──
