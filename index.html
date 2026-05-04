@@ -36,6 +36,7 @@
   display: inline-block;
 }
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -366,10 +367,27 @@ document.getElementById('file-input').addEventListener('change', async function(
     };
     reader.readAsText(file);
   } else if (file.type === 'application/pdf') {
-    // Pour les PDF on informe l'utilisateur
-    document.getElementById('course-input').value = '';
-    document.getElementById('course-input').placeholder = 'PDF détecté : ' + file.name + '\n\nPour l\'instant, copie-colle le texte de ton PDF ici. Le support natif des PDF arrive bientôt !';
-    fileNameEl.textContent = '⚠️ PDF détecté — colle le texte ci-dessous pour l\'instant';
+    fileNameEl.textContent = '⏳ Lecture du PDF en cours...';
+    var reader = new FileReader();
+    reader.onload = async function(ev) {
+      try {
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        var pdf = await pdfjsLib.getDocument({data: ev.target.result}).promise;
+        var text = '';
+        for (var i = 1; i <= pdf.numPages; i++) {
+          var page = await pdf.getPage(i);
+          var content = await page.getTextContent();
+          text += content.items.map(function(item) { return item.str; }).join(' ') + '\n';
+        }
+        document.getElementById('course-input').value = text;
+        document.getElementById('char-count').textContent = text.length + ' caractères';
+        fileNameEl.textContent = '✅ PDF lu avec succès — ' + pdf.numPages + ' page(s)';
+      } catch(err) {
+        fileNameEl.textContent = '⚠️ Erreur lecture PDF — colle le texte manuellement';
+      }
+    };
+    reader.readAsArrayBuffer(file);
   } else {
     fileNameEl.textContent = '⚠️ Format non supporté — utilise TXT ou copie-colle ton texte';
   }
