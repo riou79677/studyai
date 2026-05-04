@@ -1,5 +1,3 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,37 +13,40 @@ export default async function handler(req, res) {
   }
 
   // Connexion Supabase
-  const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
-  );
-
-  // Vérifier l'utilisateur et ses générations
   if (email) {
-    const { data: user } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email)
-      .single();
+    const userRes = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}&select=plan,generations_used,generations_limit`,
+      {
+        headers: {
+          'apikey': process.env.SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+        }
+      }
+    );
+    const users = await userRes.json();
+    const user = users[0];
 
     if (user && user.generations_used >= user.generations_limit) {
-      return res.status(403).json({ 
-        error: 'Limite de générations atteinte. Passe à Pro pour continuer !' 
+      return res.status(403).json({
+        error: 'Limite de générations atteinte. Passe à Pro pour continuer !'
       });
     }
 
-    // Incrémenter le compteur
     if (user) {
-      await supabase
-        .from('users')
-        .update({ 
-          generations_used: user.generations_used + 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('email', email);
+      await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'apikey': process.env.SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ generations_used: user.generations_used + 1 })
+        }
+      );
     }
   }
-
   const prompts = {
     fiche: `Tu es un expert en pédagogie. À partir du cours ci-dessous, génère une FICHE DE RÉVISION complète, structurée et détaillée.
 
