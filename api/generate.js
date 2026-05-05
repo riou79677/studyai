@@ -175,7 +175,7 @@ Format OBLIGATOIRE :
         system: 'Tu es StudyAI, un assistant pédagogique expert. ' + langInstruction + ' Sois précis, structuré et pédagogique.',
         messages: [{
           role: 'user',
-          content: prompts[format] + '\n\n---\nCOURS :\n' + course + '\n---\n\nGénère maintenant le contenu demandé.'
+          content: prompts[format] + '\n\n---\nCOURS :\n' + course.substring(0, 8000) + '\n---\n\nGénère maintenant le contenu demandé.'
         }]
       })
     });
