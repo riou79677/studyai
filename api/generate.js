@@ -18,8 +18,8 @@ export default async function handler(req, res) {
       `${process.env.SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}&select=plan,generations_used,generations_limit`,
       {
         headers: {
-          'apikey': process.env.SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+          'apikey': process.env.sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ,
+          'Authorization': `Bearer ${process.env.sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ}`
         }
       }
     );
@@ -34,12 +34,12 @@ export default async function handler(req, res) {
 
     if (user) {
       await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`,
+        `${process.env.https://qyjqtjrqnlbgtxvnjvnk.supabase.co}/rest/v1/users?email=eq.${encodeURIComponent(email)}`,
         {
           method: 'PATCH',
           headers: {
-            'apikey': process.env.SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+            'apikey': process.env.sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ,
+            'Authorization': `Bearer ${process.env.sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ generations_used: user.generations_used + 1 })
