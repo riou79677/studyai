@@ -1,3 +1,4 @@
+cat > /home/claude/studyai/index.html << 'ENDOFFILE'
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-/* IMPORT FICHIER */
 .import-zone { margin-bottom: 0.8rem; }
 .import-btn-row { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
 .import-btn {
@@ -35,8 +35,17 @@
   border: 1px solid rgba(34,211,238,0.2);
   display: inline-block;
 }
+.user-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--purple2);
+  background: rgba(124,109,250,0.1);
+  border: 1px solid rgba(124,109,250,0.2);
+  padding: 0.35rem 0.8rem;
+  border-radius: 100px;
+}
 </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -50,8 +59,9 @@
     StudyAI
   </div>
   <div class="nav-right">
-    <span class="plan-badge">Plan Starter · <span id="tok-nav">5</span> générations restantes</span>
-    <a href="/login.html" class="nav-login">Se connecter</a>
+    <span class="plan-badge">Plan <span id="plan-name">Starter</span> · <span id="tok-nav">5</span> générations restantes</span>
+    <span id="user-display" style="display:none" class="user-badge"></span>
+    <a href="/login.html" class="nav-login" id="nav-login-link">Se connecter</a>
     <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="nav-upgrade">Passer à Pro →</a>
   </div>
 </nav>
@@ -89,13 +99,12 @@
     </div>
 
     <div class="step-card">
-      <div class="step-label">02 — Colle ton cours</div>
-      <!-- IMPORT PDF -->
+      <div class="step-label">02 — Importe ou colle ton cours</div>
       <div class="import-zone" id="import-zone">
-        <input type="file" id="file-input" accept=".pdf,.txt,.doc,.docx" style="display:none">
+        <input type="file" id="file-input" accept=".pdf,.txt" style="display:none">
         <div class="import-btn-row">
           <button class="import-btn" id="import-file-btn">
-            📎 Importer un fichier (PDF, Word, TXT)
+            📎 Importer un fichier (PDF ou TXT)
           </button>
           <span class="import-or">ou</span>
           <span class="import-hint">colle ton cours ci-dessous</span>
@@ -157,11 +166,11 @@
         <div class="plan-desc">Parfait pour découvrir la puissance de StudyAI.</div>
         <ul class="plan-feats">
           <li>✓ 5 générations IA / mois</li>
-          <li>✓ Fiches de révision</li>
-          <li>✓ Quiz QCM basiques</li>
-          <li>✓ 1 format par session</li>
+          <li>✓ Tous les formats</li>
+          <li>✓ Import PDF et TXT</li>
+          <li>✓ Téléchargement en .txt</li>
         </ul>
-        <button class="plan-btn plan-btn-ghost" id="starter-btn">Commencer gratuitement</button>
+        <a href="/signup.html" class="plan-btn plan-btn-ghost" style="text-align:center;display:block;">Commencer gratuitement</a>
       </div>
       <div class="pricing-card pricing-card-pop">
         <div class="pop-badge">⭐ Le plus populaire</div>
@@ -172,9 +181,9 @@
         <ul class="plan-feats">
           <li>✓ 50 générations IA / mois</li>
           <li>✓ Tous les formats</li>
-          <li>✓ Téléchargement du résultat</li>
           <li>✓ IA multilingue</li>
           <li>✓ Support prioritaire</li>
+          <li>✓ Historique de session</li>
         </ul>
         <div class="plan-btns">
           <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="plan-btn plan-btn-grad">Essayer 7 jours gratuits</a>
@@ -211,123 +220,41 @@
   </div>
 </footer>
 
-<!-- MODAL AUTH -->
-<div id="auth-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-  <div class="modal-box">
-    <button id="modal-close-btn" style="position:absolute;top:1rem;right:1rem;background:var(--surface);border:1px solid var(--border);width:32px;height:32px;border-radius:50%;cursor:pointer;color:var(--text2);font-size:1rem;">✕</button>
-    <h2 id="auth-title">Créer mon compte</h2>
-    <p id="auth-sub" style="font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem;">Commence gratuitement — aucune carte requise.</p>
-    <div class="modal-toggle">
-      <button class="mtab active" id="tab-signup">Inscription</button>
-      <button class="mtab" id="tab-login">Connexion</button>
-    </div>
-    <div class="mfield">
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="ton@email.com">
-    </div>
-    <div class="mfield">
-      <label>Mot de passe</label>
-      <input type="password" id="auth-password" placeholder="••••••••">
-    </div>
-    <div id="auth-error" style="color:#f472b6;font-size:0.8rem;margin-bottom:0.5rem;display:none"></div>
-    <div id="auth-success" style="color:#4ade80;font-size:0.8rem;margin-bottom:0.5rem;display:none"></div>
-    <button class="modal-action" id="auth-submit-btn">Créer mon compte</button>
-    <p class="modal-note">En continuant, tu acceptes nos CGU & politique de confidentialité.</p>
-  </div>
-</div>
-
 <script>
-// ── VARIABLES GLOBALES ──
 var currentFormat = 'fiche';
 var currentFormatName = 'Fiche de révision';
 var currentFormatIcon = '📄';
 var tokensLeft = 5;
 var lastResult = '';
 var sessionHistory = [];
-var authMode = 'signup';
+var currentUserEmail = null;
 
-// ── MODAL AUTH ──
-document.getElementById('nav-login-btn').addEventListener('click', function() {
-  document.getElementById('auth-modal').style.display = 'flex';
-});
-
-document.getElementById('starter-btn').addEventListener('click', function() {
-  document.getElementById('auth-modal').style.display = 'flex';
-});
-
-document.getElementById('modal-close-btn').addEventListener('click', function() {
-  document.getElementById('auth-modal').style.display = 'none';
-});
-
-document.getElementById('auth-modal').addEventListener('click', function(e) {
-  if (e.target === this) this.style.display = 'none';
-});
-
-document.getElementById('tab-signup').addEventListener('click', function() {
-  authMode = 'signup';
-  document.getElementById('tab-signup').classList.add('active');
-  document.getElementById('tab-login').classList.remove('active');
-  document.getElementById('auth-title').textContent = 'Créer mon compte';
-  document.getElementById('auth-submit-btn').textContent = 'Créer mon compte';
-});
-
-document.getElementById('tab-login').addEventListener('click', function() {
-  authMode = 'login';
-  document.getElementById('tab-login').classList.add('active');
-  document.getElementById('tab-signup').classList.remove('active');
-  document.getElementById('auth-title').textContent = 'Bon retour !';
-  document.getElementById('auth-submit-btn').textContent = 'Se connecter';
-});
-
-document.getElementById('auth-submit-btn').addEventListener('click', async function() {
-  var email = document.getElementById('auth-email').value.trim();
-  var password = document.getElementById('auth-password').value;
-  var errBox = document.getElementById('auth-error');
-  var successBox = document.getElementById('auth-success');
-
-  errBox.style.display = 'none';
-  successBox.style.display = 'none';
-
-  if (!email || !password) {
-    errBox.textContent = 'Remplis tous les champs !';
-    errBox.style.display = 'block';
-    return;
+// ── DÉTECTION SESSION ──
+var savedUser = null;
+try { savedUser = JSON.parse(localStorage.getItem('studyai_user')); } catch(e) {}
+if (savedUser && savedUser.email) {
+  currentUserEmail = savedUser.email;
+  var displayName = savedUser.email.split('@')[0];
+  document.getElementById('user-display').textContent = '👤 ' + displayName;
+  document.getElementById('user-display').style.display = 'inline-block';
+  document.getElementById('nav-login-link').style.display = 'none';
+  if (savedUser.remaining !== undefined) {
+    tokensLeft = savedUser.remaining;
+    document.getElementById('tok-nav').textContent = tokensLeft;
   }
-
-  this.textContent = 'Chargement...';
-  this.disabled = true;
-
-  try {
-    var url = 'https://qyjqtjrqnlbgtxvnjvnk.supabase.co/auth/v1/' + (authMode === 'signup' ? 'signup' : 'token?grant_type=password');
-    var response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ'
-      },
-      body: JSON.stringify({ email: email, password: password })
-    });
-    var data = await response.json();
-
-    if (data.error || data.error_description) {
-      errBox.textContent = authMode === 'signup' ? 'Erreur lors de la création du compte.' : 'Email ou mot de passe incorrect.';
-      errBox.style.display = 'block';
-    } else {
-      successBox.textContent = authMode === 'signup' ? '✅ Compte créé ! Bienvenue sur StudyAI !' : '✅ Connecté avec succès !';
-      successBox.style.display = 'block';
-      document.getElementById('nav-login-btn').textContent = '👤 ' + email.split('@')[0];
-      setTimeout(function() {
-        document.getElementById('auth-modal').style.display = 'none';
-      }, 2000);
+  if (savedUser.plan) {
+    var planDisplay = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
+    document.getElementById('plan-name').textContent = planDisplay;
+  }
+  // Clic sur le nom = déconnexion
+  document.getElementById('user-display').style.cursor = 'pointer';
+  document.getElementById('user-display').addEventListener('click', function() {
+    if (confirm('Te déconnecter ?')) {
+      localStorage.removeItem('studyai_user');
+      window.location.reload();
     }
-  } catch(e) {
-    errBox.textContent = 'Une erreur est survenue, réessaie.';
-    errBox.style.display = 'block';
-  }
-
-  this.disabled = false;
-  this.textContent = authMode === 'signup' ? 'Créer mon compte' : 'Se connecter';
-});
+  });
+}
 
 // ── FORMAT ──
 document.querySelectorAll('.fmt').forEach(function(el) {
@@ -340,7 +267,7 @@ document.querySelectorAll('.fmt').forEach(function(el) {
   });
 });
 
-// ── EXEMPLES ──
+// ── COMPTEUR CARACTÈRES ──
 document.getElementById('course-input').addEventListener('input', function() {
   document.getElementById('char-count').textContent = this.value.length + ' caractères';
 });
@@ -353,17 +280,15 @@ document.getElementById('import-file-btn').addEventListener('click', function() 
 document.getElementById('file-input').addEventListener('change', async function(e) {
   var file = e.target.files[0];
   if (!file) return;
-
   var fileNameEl = document.getElementById('file-name');
-  fileNameEl.textContent = '📄 ' + file.name + ' chargé';
   fileNameEl.style.display = 'block';
 
-  // Lire le fichier texte
   if (file.type === 'text/plain') {
     var reader = new FileReader();
     reader.onload = function(ev) {
       document.getElementById('course-input').value = ev.target.result;
       document.getElementById('char-count').textContent = ev.target.result.length + ' caractères';
+      fileNameEl.textContent = '✅ ' + file.name + ' chargé';
     };
     reader.readAsText(file);
   } else if (file.type === 'application/pdf') {
@@ -375,21 +300,22 @@ document.getElementById('file-input').addEventListener('change', async function(
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         var pdf = await pdfjsLib.getDocument({data: ev.target.result}).promise;
         var text = '';
-        for (var i = 1; i <= pdf.numPages; i++) {
+        var maxPages = Math.min(pdf.numPages, 15);
+        for (var i = 1; i <= maxPages; i++) {
           var page = await pdf.getPage(i);
           var content = await page.getTextContent();
           text += content.items.map(function(item) { return item.str; }).join(' ') + '\n';
         }
         document.getElementById('course-input').value = text;
         document.getElementById('char-count').textContent = text.length + ' caractères';
-        fileNameEl.textContent = '✅ PDF lu avec succès — ' + pdf.numPages + ' page(s)';
+        fileNameEl.textContent = '✅ PDF lu — ' + maxPages + '/' + pdf.numPages + ' pages (max 15 pour éviter les timeouts)';
       } catch(err) {
         fileNameEl.textContent = '⚠️ Erreur lecture PDF — colle le texte manuellement';
       }
     };
     reader.readAsArrayBuffer(file);
   } else {
-    fileNameEl.textContent = '⚠️ Format non supporté — utilise TXT ou copie-colle ton texte';
+    fileNameEl.textContent = '⚠️ Format non supporté — utilise PDF ou TXT';
   }
 });
 
@@ -399,9 +325,13 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
   var errBox = document.getElementById('error-box');
   errBox.style.display = 'none';
 
-  if (!input) { errBox.textContent = '⚠️ Colle d\'abord le contenu de ton cours !'; errBox.style.display = 'block'; return; }
+  if (!input) { errBox.textContent = '⚠️ Colle ou importe ton cours !'; errBox.style.display = 'block'; return; }
   if (input.length < 30) { errBox.textContent = '⚠️ Le cours est trop court.'; errBox.style.display = 'block'; return; }
-  if (tokensLeft <= 0) { errBox.textContent = '⚠️ Tu as utilisé tes 5 générations gratuites. Passe à Pro !'; errBox.style.display = 'block'; return; }
+  if (tokensLeft <= 0) {
+    errBox.textContent = '⚠️ Tu as utilisé toutes tes générations. Passe à Pro pour continuer !';
+    errBox.style.display = 'block';
+    return;
+  }
 
   var btn = document.getElementById('gen-btn');
   btn.disabled = true;
@@ -419,7 +349,12 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
     var response = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ course: input, format: currentFormat, language: document.getElementById('lang-sel').value })
+      body: JSON.stringify({
+        course: input.substring(0, 8000),
+        format: currentFormat,
+        language: document.getElementById('lang-sel').value,
+        email: currentUserEmail
+      })
     });
     var data = await response.json();
     if (data.error) throw new Error(data.error);
@@ -432,6 +367,12 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
     tokensLeft--;
     document.getElementById('tok-nav').textContent = tokensLeft;
 
+    // Mettre à jour localStorage
+    if (savedUser) {
+      savedUser.remaining = tokensLeft;
+      localStorage.setItem('studyai_user', JSON.stringify(savedUser));
+    }
+
     sessionHistory.unshift({ icon: currentFormatIcon, name: currentFormatName, preview: input.substring(0, 55) + '…', result: data.result });
     if (sessionHistory.length > 6) sessionHistory.pop();
     renderHistory();
@@ -443,7 +384,7 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
   }
 
   btn.disabled = false;
-  btn.textContent = 'Générer avec l\'IA';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Générer avec l\'IA';
 });
 
 document.getElementById('copy-btn').addEventListener('click', function() {
@@ -465,6 +406,7 @@ document.getElementById('reset-btn').addEventListener('click', function() {
   document.getElementById('result-card').style.display = 'none';
   document.getElementById('course-input').value = '';
   document.getElementById('char-count').textContent = '0 caractères';
+  document.getElementById('file-name').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -491,3 +433,5 @@ function loadHistory(i) {
 
 </body>
 </html>
+ENDOFFILE
+echo "OK"
