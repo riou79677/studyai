@@ -52,28 +52,51 @@ export default async function handler(req, res) {
   }
 
   const prompts = {
-    fiche: `Tu es un expert en pédagogie. À partir du cours ci-dessous, génère une FICHE DE RÉVISION complète, structurée et détaillée.
+    fiche: `Tu es un expert en pédagogie universitaire. À partir du cours ci-dessous, génère une FICHE DE RÉVISION complète et ultra-structurée, comme si tu aidais un étudiant à préparer un examen important.
 
-Format OBLIGATOIRE :
+Format OBLIGATOIRE — respecte exactement cette structure :
 
-📚 TITRE DU SUJET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 [TITRE DU SUJET EN MAJUSCULES]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎯 POINTS CLÉS
-(8-10 points essentiels, chacun avec un titre en gras suivi d'une explication claire de 2-3 lignes)
+🎯 POINTS CLÉS À MAÎTRISER
+▸ [Point 1 — titre en gras] : explication claire et précise en 2-3 lignes
+▸ [Point 2 — titre en gras] : explication claire et précise en 2-3 lignes
+▸ [Point 3 — titre en gras] : explication claire et précise en 2-3 lignes
+(continue pour 8-10 points au total)
 
-📖 DÉFINITIONS IMPORTANTES
-(Tous les termes clés du cours avec leur définition précise et un exemple si possible)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-⚡ À RETENIR ABSOLUMENT
-(5-7 points critiques à ne jamais oublier, formulés de façon mémorable)
+📖 DÉFINITIONS ESSENTIELLES
+- [Terme 1] → définition précise et concise
+- [Terme 2] → définition précise et concise
+- [Terme 3] → définition précise et concise
+(tous les termes importants du cours)
 
-🔗 LIENS & CONNEXIONS
-(Comment ce chapitre s'articule avec d'autres notions du cours)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ À RETENIR ABSOLUMENT (pour l'examen)
+✦ [Point critique 1]
+✦ [Point critique 2]
+✦ [Point critique 3]
+✦ [Point critique 4]
+✦ [Point critique 5]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ❓ QUESTIONS PROBABLES À L'EXAMEN
-(3-5 questions typiques avec une courte réponse)
+Q1 : [question] → [réponse courte]
+Q2 : [question] → [réponse courte]
+Q3 : [question] → [réponse courte]
 
-Sois exhaustif, précis et pédagogique. Utilise des exemples concrets.`,
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 LIENS AVEC D'AUTRES NOTIONS
+→ [Connexion 1]
+→ [Connexion 2]
+
+Sois exhaustif, précis et utilise des exemples concrets. La fiche doit être directement utilisable pour réviser un examen.`,
 
     quiz: `Tu es un professeur expert. Génère un QUIZ de 6 questions variées à partir du cours.
 
