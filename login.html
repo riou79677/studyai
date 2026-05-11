@@ -191,19 +191,3 @@ document.addEventListener('keydown', function(e) {
 
 </body>
 </html>
-document.getElementById('forgot-link').addEventListener('click', async function(e) {
-  e.preventDefault();
-  var email = document.getElementById('email').value.trim();
-  if (!email) {
-    document.getElementById('msg-error').textContent = '⚠️ Entre ton email d\'abord.';
-    document.getElementById('msg-error').style.display = 'block';
-    return;
-  }
-  await fetch('https://qyjqtjrqnlbgtxvnjvnk.supabase.co/auth/v1/recover', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'apikey': 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ' },
-    body: JSON.stringify({ email: email })
-  });
-  document.getElementById('msg-success').textContent = '✅ Email de réinitialisation envoyé !';
-  document.getElementById('msg-success').style.display = 'block';
-});
