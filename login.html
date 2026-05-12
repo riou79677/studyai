@@ -148,33 +148,47 @@ async function handleLogin() {
       },
       body: JSON.stringify({ email: email, password: password })
     });
+
     var data = await response.json();
 
-    if (data.error || data.error_description) {
+    // Vérification stricte — doit avoir access_token ET user
+    if (!data.access_token || !data.user || !data.user.email) {
       errBox.textContent = '⚠️ Email ou mot de passe incorrect.';
       errBox.style.display = 'block';
-    } else {
-      // Récupérer le plan
-      var planResponse = await fetch(SUPABASE_URL + '/rest/v1/users?email=eq.' + encodeURIComponent(email) + '&select=plan,generations_used,generations_limit', {
+      btn.disabled = false;
+      btn.textContent = 'Se connecter →';
+      return;
+    }
+
+    // Récupérer le plan depuis Supabase
+    var planResponse = await fetch(
+      SUPABASE_URL + '/rest/v1/users?email=eq.' + encodeURIComponent(email) + '&select=plan,generations_used,generations_limit',
+      {
         headers: {
           'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY
+          'Authorization': 'Bearer ' + data.access_token
         }
-      });
-      var planData = await planResponse.json();
-      var plan = planData[0] ? planData[0].plan : 'starter';
-      var remaining = planData[0] ? planData[0].generations_limit - planData[0].generations_used : 5;
+      }
+    );
+    var planData = await planResponse.json();
+    var userPlan = planData[0] || { plan: 'starter', generations_used: 0, generations_limit: 5 };
+    var remaining = userPlan.generations_limit - userPlan.generations_used;
 
-      // Sauvegarder en session
-      localStorage.setItem('studyai_user', JSON.stringify({ email: email, plan: plan, remaining: remaining }));
+    // Sauvegarder en localStorage avec le vrai token
+    localStorage.setItem('studyai_user', JSON.stringify({
+      email: data.user.email,
+      plan: userPlan.plan,
+      remaining: remaining,
+      access_token: data.access_token
+    }));
 
-      successBox.textContent = '✅ Connecté ! Redirection en cours...';
-      successBox.style.display = 'block';
+    successBox.textContent = '✅ Connecté ! Redirection...';
+    successBox.style.display = 'block';
 
-      setTimeout(function() {
-        window.location.href = '/';
-      }, 1500);
-    }
+    setTimeout(function() {
+      window.location.href = '/';
+    }, 1500);
+
   } catch(e) {
     errBox.textContent = '⚠️ Une erreur est survenue. Réessaie.';
     errBox.style.display = 'block';
@@ -187,7 +201,22 @@ async function handleLogin() {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') handleLogin();
 });
-</script>
 
-</body>
-</html>
+document.getElementById('submit-btn').addEventListener('click', handleLogin);
+
+document.getElementById('forgot-link').addEventListener('click', async function(e) {
+  e.preventDefault();
+  var email = document.getElementById('email').value.trim();
+  if (!email) {
+    document.getElementById('msg-error').textContent = '⚠️ Entre ton email d\'abord.';
+    document.getElementById('msg-error').style.display = 'block';
+    return;
+  }
+  await fetch(SUPABASE_URL + '/auth/v1/recover', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+    body: JSON.stringify({ email: email })
+  });
+  document.getElementById('msg-success').textContent = '✅ Email de réinitialisation envoyé !';
+  document.getElementById('msg-success').style.display = 'block';
+});
