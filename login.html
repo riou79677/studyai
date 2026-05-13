@@ -136,6 +136,12 @@ async function handleLogin() {
     return;
   }
 
+  if (password.length < 6) {
+    errBox.textContent = '⚠️ Mot de passe trop court.';
+    errBox.style.display = 'block';
+    return;
+  }
+
   btn.textContent = 'Connexion en cours...';
   btn.disabled = true;
 
@@ -151,7 +157,6 @@ async function handleLogin() {
 
     var data = await response.json();
 
-    // Vérification stricte — doit avoir access_token ET user
     if (!data.access_token || !data.user || !data.user.email) {
       errBox.textContent = '⚠️ Email ou mot de passe incorrect.';
       errBox.style.display = 'block';
@@ -160,7 +165,6 @@ async function handleLogin() {
       return;
     }
 
-    // Récupérer le plan depuis Supabase
     var planResponse = await fetch(
       SUPABASE_URL + '/rest/v1/users?email=eq.' + encodeURIComponent(email) + '&select=plan,generations_used,generations_limit',
       {
@@ -170,11 +174,11 @@ async function handleLogin() {
         }
       }
     );
+
     var planData = await planResponse.json();
-    var userPlan = planData[0] || { plan: 'starter', generations_used: 0, generations_limit: 5 };
+    var userPlan = (planData && planData[0]) ? planData[0] : { plan: 'starter', generations_used: 0, generations_limit: 5 };
     var remaining = userPlan.generations_limit - userPlan.generations_used;
 
-    // Sauvegarder en localStorage avec le vrai token
     localStorage.setItem('studyai_user', JSON.stringify({
       email: data.user.email,
       plan: userPlan.plan,
@@ -185,25 +189,22 @@ async function handleLogin() {
     successBox.textContent = '✅ Connecté ! Redirection...';
     successBox.style.display = 'block';
 
-    setTimeout(function() {
-      window.location.href = '/';
-    }, 1500);
+    setTimeout(function() { window.location.href = '/'; }, 1500);
 
   } catch(e) {
     errBox.textContent = '⚠️ Une erreur est survenue. Réessaie.';
     errBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Se connecter →';
   }
-
-  btn.disabled = false;
-  btn.textContent = 'Se connecter →';
 }
 
+// Touche Entrée
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') handleLogin();
 });
 
-document.getElementById('submit-btn').addEventListener('click', handleLogin);
-
+// Mot de passe oublié
 document.getElementById('forgot-link').addEventListener('click', async function(e) {
   e.preventDefault();
   var email = document.getElementById('email').value.trim();
