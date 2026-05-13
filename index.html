@@ -172,12 +172,12 @@
         <div class="plan-price">0<span class="plan-cur">€</span></div>
         <div class="plan-freq">Pour toujours · Aucune CB requise</div>
         <div class="plan-desc">Parfait pour découvrir la puissance de StudyAI.</div>
-        <ul class="plan-feats">
-          <li>✓ 5 générations IA / mois</li>
-          <li>✓ Tous les formats</li>
-          <li>✓ Import PDF et TXT</li>
-          <li>✓ Téléchargement en .txt</li>
-        </ul>
+       <ul class="plan-feats">
+  <li>✓ 5 générations IA / mois</li>
+  <li>✓ Tous les formats</li>
+  <li>✓ Import PDF jusqu'à 15 pages</li>
+  <li>✓ Téléchargement en .txt</li>
+</ul>
         <a href="/signup.html" class="plan-btn plan-btn-ghost" style="text-align:center;display:block;">Commencer gratuitement</a>
       </div>
       <div class="pricing-card pricing-card-pop">
@@ -186,13 +186,14 @@
         <div class="plan-price">4,99<span class="plan-cur">€</span></div>
         <div class="plan-freq">par mois · ou <b>39,99€/an</b> (−34%)</div>
         <div class="plan-desc">Pour les étudiants sérieux qui veulent tout maîtriser.</div>
-        <ul class="plan-feats">
-          <li>✓ 50 générations IA / mois</li>
-          <li>✓ Tous les formats</li>
-          <li>✓ IA multilingue</li>
-          <li>✓ Support prioritaire</li>
-          <li>✓ Historique de session</li>
-        </ul>
+       <ul class="plan-feats">
+  <li>✓ 50 générations IA / mois</li>
+  <li>✓ Tous les formats</li>
+  <li>✓ Import PDF jusqu'à 40 pages</li>
+  <li>✓ 📚 Bibliothèque de fiches sauvegardées</li>
+  <li>✓ IA multilingue</li>
+  <li>✓ Support prioritaire</li>
+</ul>
         <div class="plan-btns">
           <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="plan-btn plan-btn-grad">Essayer 7 jours gratuits</a>
           <a href="https://buy.stripe.com/bJe5kE1idb7t47ReUK43S01" target="_blank" class="plan-btn plan-btn-outline">Annuel — 39,99€/an</a>
@@ -203,14 +204,14 @@
         <div class="plan-price">9,99<span class="plan-cur">€</span></div>
         <div class="plan-freq">par mois · ou <b>79,99€/an</b> (−34%)</div>
         <div class="plan-desc">Performance maximale, zéro compromis.</div>
-        <ul class="plan-feats">
-          <li>✓ Générations illimitées</li>
-          <li>✓ Tout ce qui est dans Pro</li>
-          <li>✓ Mode examen chronométré</li>
-          <li>✓ Suivi de progression</li>
-          <li>✓ Historique illimité</li>
-          <li>✓ Accès anticipé nouveautés</li>
-        </ul>
+       <ul class="plan-feats">
+  <li>✓ Générations illimitées</li>
+  <li>✓ Import PDF jusqu'à 100 pages</li>
+  <li>✓ 📚 Bibliothèque illimitée</li>
+  <li>✓ Mode examen chronométré</li>
+  <li>✓ Suivi de progression</li>
+  <li>✓ Accès anticipé nouveautés</li>
+</ul>
         <div class="plan-btns">
           <a href="https://buy.stripe.com/6oUdRa0e95N96fZ4g643S02" target="_blank" class="plan-btn plan-btn-gold">Essayer 7 jours gratuits</a>
           <a href="https://buy.stripe.com/eVqbJ22mhfnJbAj5ka43S04" target="_blank" class="plan-btn plan-btn-outline">Annuel — 79,99€/an</a>
@@ -251,6 +252,26 @@ if (savedUser && savedUser.email) {
     tokensLeft = savedUser.remaining;
     document.getElementById('tok-nav').textContent = tokensLeft;
   }
+  // Mode développeur - uniquement pour ton email
+var DEV_EMAIL = 'ilanmoh228@gmail.com';
+if (savedUser && savedUser.email === DEV_EMAIL) {
+  document.getElementById('dev-panel').style.display = 'block';
+}
+
+function simulatePlan(plan) {
+  if (!savedUser) return;
+  if (plan === 'reset') {
+    window.location.reload();
+    return;
+  }
+  var limits = { starter: 5, pro: 50, ultimate: 999999 };
+  savedUser.plan = plan;
+  savedUser.remaining = limits[plan];
+  localStorage.setItem('studyai_user', JSON.stringify(savedUser));
+  document.getElementById('plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('tok-nav').textContent = limits[plan] === 999999 ? '∞' : limits[plan];
+  alert('✅ Plan simulé : ' + plan);
+}
   if (savedUser.plan) {
     var planDisplay = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
     document.getElementById('plan-name').textContent = planDisplay;
@@ -317,7 +338,7 @@ var maxPages = Math.min(pdf.numPages, pageLimit);
         }
         document.getElementById('course-input').value = text;
         document.getElementById('char-count').textContent = text.length + ' caractères';
-        fileNameEl.textContent = '✅ PDF lu — ' + maxPages + '/' + pdf.numPages + ' pages (max 15 pour éviter les timeouts)';
+        fileNameEl.textContent = '✅ PDF lu — ' + maxPages + '/' + pdf.numPages + ' pages (max ' + pageLimit + ' pour ton plan)';
       } catch(err) {
         fileNameEl.textContent = '⚠️ Erreur lecture PDF — colle le texte manuellement';
       }
@@ -459,6 +480,17 @@ function loadHistory(i) {
   lastResult = h.result;
 }
 </script>
-
+<!-- MODE DEV - visible uniquement pour le compte admin -->
+<div id="dev-panel" style="display:none;position:fixed;bottom:1rem;right:1rem;z-index:9999;">
+  <div style="background:#13131f;border:1px solid rgba(124,109,250,0.4);border-radius:12px;padding:1rem;min-width:200px;">
+    <div style="font-size:0.75rem;font-weight:700;color:#a78bfa;margin-bottom:0.8rem;letter-spacing:0.08em;">🛠️ MODE DÉVELOPPEUR</div>
+    <div style="display:flex;flex-direction:column;gap:0.4rem;">
+      <button onclick="simulatePlan('starter')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;">👤 Simuler Starter</button>
+      <button onclick="simulatePlan('pro')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;">⚡ Simuler Pro</button>
+      <button onclick="simulatePlan('ultimate')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;">👑 Simuler Ultimate</button>
+      <button onclick="simulatePlan('reset')" style="background:#1a1a2e;border:1px solid rgba(124,109,250,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#a78bfa;font-size:0.78rem;cursor:pointer;text-align:left;">🔄 Réinitialiser</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
