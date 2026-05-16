@@ -185,7 +185,7 @@ async function loadFiches() {
 function renderPage() {
   var plan = currentUser.plan || 'starter';
   var planDisplay = plan.charAt(0).toUpperCase() + plan.slice(1);
-  var remaining = currentUser.remaining !== undefined ? currentUser.remaining : 5;
+  var remaining = currentUser.remaining === 999999 ? '∞' : (currentUser.remaining !== undefined ? currentUser.remaining : 5);
 
   var formats = ['all','fiche','quiz','flash','mindmap','questions','chrono'];
   var formatLabels = {'all':'Tout','fiche':'📄 Fiches','quiz':'✅ Quiz','flash':'🃏 Flashcards','mindmap':'🧠 Mind Maps','questions':'💬 Questions','chrono':'📅 Chronologies'};
@@ -241,7 +241,7 @@ function renderPage() {
           <div class="fiche-date">${dateStr}</div>
           <div class="fiche-actions" onclick="event.stopPropagation()">
             <button class="fiche-btn" onclick="copierFiche(${i})">📋 Copier</button>
-            <button class="fiche-btn" onclick="telechargerFiche(${i})">⬇️ DL</button>
+            <button class="fiche-btn" onclick="telechargerFiche(${i})">⬇️ Télécharger</button>
             <button class="fiche-btn delete" onclick="supprimerFiche('${fiche.id}')">🗑️</button>
           </div>
         </div>`;
