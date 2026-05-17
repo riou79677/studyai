@@ -1,3 +1,4 @@
+# INDEX.HTML - avec déconnexion auto 30min, toggle dev panel, inactivité
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,6 +21,7 @@
 .user-menu a:hover{background:#1a1a2e}
 .user-menu .danger{color:#f472b6}
 .user-menu hr{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:0.3rem 0}
+.dev-toggle{position:fixed;bottom:1rem;left:1rem;z-index:9998;background:#13131f;border:1px solid rgba(124,109,250,0.3);border-radius:100px;padding:0.4rem 0.9rem;font-size:0.72rem;font-weight:700;color:#a78bfa;cursor:pointer;display:none;font-family:DM Sans,sans-serif}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
@@ -57,7 +59,6 @@
   </div>
 
   <div class="generator">
-
     <div class="step-card">
       <div class="step-label">01 — Choisis ton format</div>
       <div class="format-grid">
@@ -169,8 +170,8 @@
           <li>✓ Générations illimitées</li>
           <li>✓ Import PDF jusqu'à 100 pages</li>
           <li>✓ 📚 Bibliothèque illimitée</li>
-          <li>✓ Mode examen chronométré</li>
-          <li>✓ Suivi de progression</li>
+          <li>✓ 🎯 Simulation d'examen</li>
+          <li>✓ 📈 Vois ta progression</li>
           <li>✓ Accès anticipé nouveautés</li>
         </ul>
         <div class="plan-btns">
@@ -190,37 +191,30 @@
   </div>
 </footer>
 
-<!-- PANEL DÉVELOPPEUR - visible uniquement pour l'admin -->
-<div id="dev-panel" style="display:none;position:fixed;bottom:1rem;right:1rem;z-index:9999;">
-  <div style="background:#13131f;border:1px solid rgba(124,109,250,0.4);border-radius:12px;padding:1rem;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+<!-- BOUTON TOGGLE DEV (visible uniquement admin) -->
+<button class="dev-toggle" id="dev-toggle" onclick="toggleDevPanel()">🛠️ Dev</button>
+
+<!-- PANEL DÉVELOPPEUR -->
+<div id="dev-panel" style="display:none;position:fixed;bottom:3.5rem;right:1rem;z-index:9999;">
+  <div style="background:#13131f;border:1px solid rgba(124,109,250,0.4);border-radius:12px;padding:1rem;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
     <div style="font-size:0.75rem;font-weight:700;color:#a78bfa;margin-bottom:0.8rem;letter-spacing:0.08em;">🛠️ MODE DÉVELOPPEUR</div>
     <div style="display:flex;flex-direction:column;gap:0.4rem;">
-      <button onclick="simulatePlan('starter')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">👤 Simuler Starter (5)</button>
-      <button onclick="simulatePlan('pro')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">⚡ Simuler Pro (50)</button>
+      <button onclick="simulatePlan('starter')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">👤 Simuler Starter (5 gen)</button>
+      <button onclick="simulatePlan('pro')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">⚡ Simuler Pro (50 gen)</button>
       <button onclick="simulatePlan('ultimate')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">👑 Simuler Ultimate (∞)</button>
-      <button onclick="simulatePlan('reset')" style="background:#1a1a2e;border:1px solid rgba(124,109,250,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#a78bfa;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">🔄 Réinitialiser</button>
-      <button onclick="document.getElementById('dev-panel').style.display='none'" style="background:transparent;border:none;color:#5a5a7a;font-size:0.72rem;cursor:pointer;text-align:left;margin-top:0.2rem;font-family:DM Sans,sans-serif;">✕ Fermer le panel</button>
+      <button onclick="resetGenerations()" style="background:#1a1a2e;border:1px solid rgba(255,165,0,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#fb923c;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">🔢 Remettre générations à 0</button>
+      <button onclick="simulatePlan('reset')" style="background:#1a1a2e;border:1px solid rgba(124,109,250,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#a78bfa;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">🔄 Réinitialiser tout</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── CONSTANTES ──
 var SUPABASE_URL = 'https://qyjqtjrqnlbgtxvnjvnk.supabase.co';
 var SUPABASE_KEY = 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ';
 var DEV_EMAIL = 'ilanmoh228@gmail.com';
-
-// ── VARIABLES GLOBALES ──
-var currentFormat = 'fiche';
-var currentFormatName = 'Fiche de révision';
-var currentFormatIcon = '📄';
-var tokensLeft = 5;
-var lastResult = '';
-var sessionHistory = [];
-var currentUserEmail = null;
-var savedUser = null;
-
-// ── FONCTIONS GLOBALES (doivent être en dehors de tout bloc) ──
+var currentFormat = 'fiche', currentFormatName = 'Fiche de révision', currentFormatIcon = '📄';
+var tokensLeft = 5, lastResult = '', sessionHistory = [], currentUserEmail = null, savedUser = null;
+var devPanelOpen = false;
 
 function toggleMenu() {
   var menu = document.getElementById('user-menu');
@@ -232,56 +226,81 @@ function deconnexion() {
   window.location.reload();
 }
 
+function toggleDevPanel() {
+  devPanelOpen = !devPanelOpen;
+  document.getElementById('dev-panel').style.display = devPanelOpen ? 'block' : 'none';
+  document.getElementById('dev-toggle').textContent = devPanelOpen ? '✕ Fermer Dev' : '🛠️ Dev';
+}
+
 function simulatePlan(plan) {
   if (!savedUser) return;
-  if (plan === 'reset') {
-    window.location.reload();
-    return;
-  }
+  if (plan === 'reset') { window.location.reload(); return; }
   var limits = { starter: 5, pro: 50, ultimate: 999999 };
   savedUser.plan = plan;
   savedUser.remaining = limits[plan];
   localStorage.setItem('studyai_user', JSON.stringify(savedUser));
-  var planDisplay = plan.charAt(0).toUpperCase() + plan.slice(1);
-  document.getElementById('plan-name').textContent = planDisplay;
+  var pd = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('plan-name').textContent = pd;
   document.getElementById('tok-nav').textContent = limits[plan] === 999999 ? '∞' : limits[plan];
   tokensLeft = limits[plan];
-  alert('✅ Plan simulé : ' + planDisplay);
+  showToast('✅ Plan simulé : ' + pd);
 }
 
-// Fermer le menu si on clique ailleurs
+function resetGenerations() {
+  if (!savedUser) return;
+  tokensLeft = 0;
+  savedUser.remaining = 0;
+  localStorage.setItem('studyai_user', JSON.stringify(savedUser));
+  document.getElementById('tok-nav').textContent = '0';
+  showToast('🔢 Générations remises à 0 — teste la limite !');
+}
+
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#13131f;border:1px solid rgba(124,109,250,0.4);color:#f1f0ff;padding:0.7rem 1.5rem;border-radius:100px;font-size:0.85rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2500);
+}
+
 document.addEventListener('click', function(e) {
   var menu = document.getElementById('user-menu');
   var display = document.getElementById('user-display');
-  if (menu && display && !display.contains(e.target) && !menu.contains(e.target)) {
-    menu.style.display = 'none';
-  }
+  if (menu && display && !display.contains(e.target) && !menu.contains(e.target)) menu.style.display = 'none';
 });
 
-// ── DÉTECTION SESSION ──
+// ── SESSION ──
 try { savedUser = JSON.parse(localStorage.getItem('studyai_user')); } catch(e) {}
-
 if (savedUser && savedUser.email) {
   currentUserEmail = savedUser.email;
-  var displayName = savedUser.email.split('@')[0];
-  document.getElementById('user-display').textContent = '👤 ' + displayName;
+  document.getElementById('user-display').textContent = '👤 ' + savedUser.email.split('@')[0];
   document.getElementById('user-display').style.display = 'inline-block';
   document.getElementById('nav-login-link').style.display = 'none';
-
   if (savedUser.remaining !== undefined) {
     tokensLeft = savedUser.remaining;
     document.getElementById('tok-nav').textContent = tokensLeft === 999999 ? '∞' : tokensLeft;
   }
   if (savedUser.plan) {
-    var planDisplay = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
-    document.getElementById('plan-name').textContent = planDisplay;
+    document.getElementById('plan-name').textContent = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
   }
-
-  // Panel développeur uniquement pour l'admin
   if (savedUser.email === DEV_EMAIL) {
-    document.getElementById('dev-panel').style.display = 'block';
+    document.getElementById('dev-toggle').style.display = 'block';
   }
 }
+
+// ── INACTIVITÉ 30 MIN ──
+var inactivityTimer;
+function resetTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function() {
+    localStorage.removeItem('studyai_user');
+    window.location.href = '/login.html';
+  }, 30 * 60 * 1000);
+}
+document.addEventListener('mousemove', resetTimer);
+document.addEventListener('keypress', resetTimer);
+document.addEventListener('click', resetTimer);
+resetTimer();
 
 // ── FORMAT ──
 document.querySelectorAll('.fmt').forEach(function(el) {
@@ -294,12 +313,11 @@ document.querySelectorAll('.fmt').forEach(function(el) {
   });
 });
 
-// ── COMPTEUR CARACTÈRES ──
 document.getElementById('course-input').addEventListener('input', function() {
   document.getElementById('char-count').textContent = this.value.length + ' caractères';
 });
 
-// ── IMPORT FICHIER ──
+// ── IMPORT ──
 document.getElementById('import-file-btn').addEventListener('click', function() {
   document.getElementById('file-input').click();
 });
@@ -309,7 +327,6 @@ document.getElementById('file-input').addEventListener('change', async function(
   if (!file) return;
   var fileNameEl = document.getElementById('file-name');
   fileNameEl.style.display = 'block';
-
   if (file.type === 'text/plain') {
     var reader = new FileReader();
     reader.onload = function(ev) {
@@ -353,37 +370,23 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
   var input = document.getElementById('course-input').value.trim();
   var errBox = document.getElementById('error-box');
   errBox.style.display = 'none';
-
   if (!input) { errBox.textContent = '⚠️ Colle ou importe ton cours !'; errBox.style.display = 'block'; return; }
   if (input.length < 30) { errBox.textContent = '⚠️ Le cours est trop court.'; errBox.style.display = 'block'; return; }
-  if (tokensLeft <= 0) {
-    errBox.textContent = '⚠️ Tu as utilisé toutes tes générations. Passe à Pro pour continuer !';
-    errBox.style.display = 'block';
-    return;
-  }
+  if (tokensLeft <= 0) { errBox.textContent = '⚠️ Tu as utilisé toutes tes générations. Passe à Pro pour continuer !'; errBox.style.display = 'block'; return; }
 
   var btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.textContent = 'Génération en cours…';
-
+  btn.disabled = true; btn.textContent = 'Génération en cours…';
   var resultCard = document.getElementById('result-card');
   var spinner = document.getElementById('result-spinner');
   var content = document.getElementById('result-content');
-  resultCard.style.display = 'block';
-  spinner.style.display = 'flex';
-  content.style.display = 'none';
+  resultCard.style.display = 'block'; spinner.style.display = 'flex'; content.style.display = 'none';
   resultCard.scrollIntoView({ behavior: 'smooth' });
 
   try {
     var response = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        course: input.substring(0, 8000),
-        format: currentFormat,
-        language: document.getElementById('lang-sel').value,
-        email: currentUserEmail
-      })
+      body: JSON.stringify({ course: input.substring(0, 8000), format: currentFormat, language: document.getElementById('lang-sel').value, email: currentUserEmail })
     });
     var data = await response.json();
     if (data.error) throw new Error(data.error);
@@ -391,38 +394,21 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
     lastResult = data.result;
     content.textContent = data.result;
     document.getElementById('result-title').textContent = currentFormatIcon + ' ' + currentFormatName;
-    spinner.style.display = 'none';
-    content.style.display = 'block';
+    spinner.style.display = 'none'; content.style.display = 'block';
 
-    // Décrémenter seulement si pas Ultimate
     if (tokensLeft !== 999999) {
       tokensLeft--;
       document.getElementById('tok-nav').textContent = tokensLeft;
-      if (savedUser) {
-        savedUser.remaining = tokensLeft;
-        localStorage.setItem('studyai_user', JSON.stringify(savedUser));
-      }
+      if (savedUser) { savedUser.remaining = tokensLeft; localStorage.setItem('studyai_user', JSON.stringify(savedUser)); }
     }
 
-    // Sauvegarder dans Supabase si connecté
     if (currentUserEmail) {
       var lignes = data.result.split('\n').filter(function(l){ return l.trim().length > 3; });
       var titre = (lignes[1] || lignes[0] || currentFormatName).replace(/[📚🎯📖⚡❓🔗━▸✦]/g, '').trim().substring(0, 80);
       fetch(SUPABASE_URL + '/rest/v1/fiches', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          user_email: currentUserEmail,
-          format: currentFormat,
-          format_icon: currentFormatIcon,
-          titre: titre,
-          contenu: data.result
-        })
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ user_email: currentUserEmail, format: currentFormat, format_icon: currentFormatIcon, titre: titre, contenu: data.result })
       }).catch(function(e){ console.log('Erreur sauvegarde:', e); });
     }
 
@@ -435,7 +421,6 @@ document.getElementById('gen-btn').addEventListener('click', async function() {
     content.textContent = '⚠️ Une erreur est survenue : ' + e.message;
     content.style.display = 'block';
   }
-
   btn.disabled = false;
   btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Générer avec l\'IA';
 });
@@ -449,10 +434,8 @@ document.getElementById('copy-btn').addEventListener('click', function() {
 
 document.getElementById('download-btn').addEventListener('click', function() {
   var blob = new Blob([lastResult], { type: 'text/plain;charset=utf-8' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'StudyAI_' + currentFormatName + '.txt';
-  a.click();
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'StudyAI_' + currentFormatName + '.txt'; a.click();
 });
 
 document.getElementById('reset-btn').addEventListener('click', function() {
