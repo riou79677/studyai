@@ -107,7 +107,7 @@ async function handleLogin(){
     var remaining=userPlan.generations_limit-userPlan.generations_used;
     localStorage.setItem('ficheai_user',JSON.stringify({email:data.user.email,plan:userPlan.plan,remaining:remaining,access_token:data.access_token}));
     successBox.textContent='Connecté ! Redirection...';successBox.style.display='block';
-    setTimeout(function(){window.location.href='/';},1200);
+    setTimeout(function() { window.location.href = '/app.html'; }, 1200);
   }catch(e){
     errBox.textContent='Erreur réseau. Vérifie ta connexion et réessaie.';errBox.style.display='block';
     isLoading=false;btn.disabled=false;btn.textContent='Se connecter →';
