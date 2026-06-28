@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyAI — Générateur de fiches IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.import-zone{margin-bottom:0.8rem}
+.import-btn-row{display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap}
+.import-btn{background:var(--bg2);border:1.5px dashed var(--border2);border-radius:10px;padding:0.65rem 1.2rem;font-size:0.85rem;font-weight:600;color:var(--purple2);cursor:pointer;font-family:var(--font-b);transition:all 0.2s}
+.import-btn:hover{border-color:var(--purple);background:rgba(124,109,250,0.06)}
+.import-or{font-size:0.8rem;color:var(--text3)}
+.import-hint{font-size:0.8rem;color:var(--text3)}
+.file-name{margin-top:0.5rem;font-size:0.78rem;color:var(--cyan);padding:0.3rem 0.8rem;background:rgba(34,211,238,0.08);border-radius:8px;border:1px solid rgba(34,211,238,0.2);display:inline-block}
+.user-badge{font-size:0.82rem;font-weight:600;color:var(--purple2);background:rgba(124,109,250,0.1);border:1px solid rgba(124,109,250,0.2);padding:0.35rem 0.8rem;border-radius:100px;cursor:pointer;user-select:none}
+.user-menu{display:none;position:absolute;right:0;top:120%;background:#13131f;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:0.5rem;min-width:200px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+.user-menu a{display:block;padding:0.6rem 0.8rem;color:#a0a0c0;text-decoration:none;font-size:0.85rem;border-radius:8px;transition:background 0.2s}
+.user-menu a:hover{background:#1a1a2e}
+.user-menu .danger{color:#f472b6}
+.user-menu hr{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:0.3rem 0}
+.dev-toggle{position:fixed;bottom:1rem;left:1rem;z-index:9998;background:#13131f;border:1px solid rgba(124,109,250,0.3);border-radius:100px;padding:0.4rem 0.9rem;font-size:0.72rem;font-weight:700;color:#a78bfa;cursor:pointer;display:none;font-family:DM Sans,sans-serif}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    StudyAI
+  </div>
+  <div class="nav-right">
+    <span class="plan-badge">Plan <span id="plan-name">Starter</span> · <span id="tok-nav">5</span> générations restantes</span>
+    <div style="position:relative;display:inline-block">
+      <span id="user-display" style="display:none" class="user-badge" onclick="toggleMenu()"></span>
+      <div id="user-menu" class="user-menu">
+        <a href="/dashboard.html">📚 Ma bibliothèque</a>
+        <a href="/settings.html">⚙️ Paramètres</a>
+        <hr>
+        <a href="#" class="danger" onclick="deconnexion()">🚪 Se déconnecter</a>
+      </div>
+    </div>
+    <a href="/login.html" class="nav-login" id="nav-login-link">Se connecter</a>
+    <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="nav-upgrade">Passer à Pro →</a>
+  </div>
+</nav>
+
+<main>
+  <div class="hero-small">
+    <h1>Transforme ton cours en <span class="grad">outil de révision</span></h1>
+    <p>Colle ton cours, choisis un format — l'IA génère en 15 secondes.</p>
+  </div>
+
+  <div class="generator">
+    <div class="step-card">
+      <div class="step-label">01 — Choisis ton format</div>
+      <div class="format-grid">
+        <div class="fmt active" data-fmt="fiche" data-icon="📄" data-name="Fiche de révision"><span class="fmt-icon">📄</span><span class="fmt-name">Fiche</span></div>
+        <div class="fmt" data-fmt="quiz" data-icon="✅" data-name="Quiz QCM"><span class="fmt-icon">✅</span><span class="fmt-name">Quiz QCM</span></div>
+        <div class="fmt" data-fmt="flash" data-icon="🃏" data-name="Flashcards"><span class="fmt-icon">🃏</span><span class="fmt-name">Flashcards</span></div>
+        <div class="fmt" data-fmt="mindmap" data-icon="🧠" data-name="Mind Map"><span class="fmt-icon">🧠</span><span class="fmt-name">Mind Map</span></div>
+        <div class="fmt" data-fmt="questions" data-icon="💬" data-name="Questions ouvertes"><span class="fmt-icon">💬</span><span class="fmt-name">Questions</span></div>
+        <div class="fmt" data-fmt="chrono" data-icon="📅" data-name="Chronologie"><span class="fmt-icon">📅</span><span class="fmt-name">Chronologie</span></div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-label">02 — Importe ou colle ton cours</div>
+      <div class="import-zone">
+        <input type="file" id="file-input" accept=".pdf,.txt" style="display:none">
+        <div class="import-btn-row">
+          <button class="import-btn" id="import-file-btn">📎 Importer un fichier (PDF ou TXT)</button>
+          <span class="import-or">ou</span>
+          <span class="import-hint">colle ton cours ci-dessous</span>
+        </div>
+        <div id="file-name" class="file-name" style="display:none"></div>
+      </div>
+      <textarea id="course-input" placeholder="Colle ici le contenu de ton cours, ou importe un fichier ci-dessus..."></textarea>
+      <div class="input-footer">
+        <span id="char-count">0 caractères</span>
+        <select id="lang-sel">
+          <option value="auto">🌍 Langue auto</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+        </select>
+      </div>
+      <div id="error-box" class="error-box" style="display:none"></div>
+      <button id="gen-btn" class="gen-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Générer avec l'IA
+      </button>
+    </div>
+
+    <div class="step-card result-card" id="result-card" style="display:none">
+      <div class="result-header">
+        <div class="result-title" id="result-title">📄 Fiche de révision</div>
+        <div class="result-actions">
+          <button id="copy-btn">📋 Copier</button>
+          <button id="download-btn">⬇️ Télécharger</button>
+          <button id="reset-btn">↩ Nouveau</button>
+        </div>
+      </div>
+      <div id="result-spinner" class="result-spinner">
+        <div class="spinner"></div>
+        <p>L'IA analyse ton cours et génère ton contenu…</p>
+      </div>
+      <pre id="result-content" class="result-content" style="display:none"></pre>
+    </div>
+
+    <div id="history-section" style="display:none">
+      <div class="history-title">📂 Historique de session</div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+</main>
+
+<section class="pricing-section">
+  <div class="pricing-inner">
+    <div class="pricing-eyebrow">Tarifs</div>
+    <h2 class="pricing-title">Simple. Transparent.<br>Fait pour les étudiants.</h2>
+    <p class="pricing-sub">Commence gratuit. Upgrade quand tu en as besoin.</p>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">0<span class="plan-cur">€</span></div>
+        <div class="plan-freq">Pour toujours · Aucune CB requise</div>
+        <div class="plan-desc">Parfait pour découvrir la puissance de StudyAI.</div>
+        <ul class="plan-feats">
+          <li>✓ 5 générations IA / mois</li>
+          <li>✓ Tous les formats</li>
+          <li>✓ Import PDF jusqu'à 15 pages</li>
+          <li>✓ Téléchargement en .txt</li>
+        </ul>
+        <a href="/signup.html" class="plan-btn plan-btn-ghost" style="text-align:center;display:block;">Commencer gratuitement</a>
+      </div>
+      <div class="pricing-card pricing-card-pop">
+        <div class="pop-badge">⭐ Le plus populaire</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">4,99<span class="plan-cur">€</span></div>
+        <div class="plan-freq">par mois · ou <b>39,99€/an</b> (−34%)</div>
+        <div class="plan-desc">Pour les étudiants sérieux qui veulent tout maîtriser.</div>
+        <ul class="plan-feats">
+          <li>✓ 50 générations IA / mois</li>
+          <li>✓ Tous les formats</li>
+          <li>✓ Import PDF jusqu'à 40 pages</li>
+          <li>✓ 📚 Bibliothèque de fiches sauvegardées</li>
+          <li>✓ IA multilingue</li>
+          <li>✓ Support prioritaire</li>
+        </ul>
+        <div class="plan-btns">
+          <a href="https://buy.stripe.com/dRmcN68KF5N9bAj9Aq43S00" target="_blank" class="plan-btn plan-btn-grad">Essayer 7 jours gratuits</a>
+          <a href="https://buy.stripe.com/bJe5kE1idb7t47ReUK43S01" target="_blank" class="plan-btn plan-btn-outline">Annuel — 39,99€/an</a>
+        </div>
+      </div>
+      <div class="pricing-card pricing-card-ult">
+        <div class="plan-name">Ultimate</div>
+        <div class="plan-price">9,99<span class="plan-cur">€</span></div>
+        <div class="plan-freq">par mois · ou <b>79,99€/an</b> (−34%)</div>
+        <div class="plan-desc">Performance maximale, zéro compromis.</div>
+        <ul class="plan-feats">
+          <li>✓ Générations illimitées</li>
+          <li>✓ Import PDF jusqu'à 100 pages</li>
+          <li>✓ 📚 Bibliothèque illimitée</li>
+          <li>✓ 🎯 Simulation d'examen</li>
+          <li>✓ 📈 Vois ta progression</li>
+          <li>✓ Accès anticipé nouveautés</li>
+        </ul>
+        <div class="plan-btns">
+          <a href="https://buy.stripe.com/6oUdRa0e95N96fZ4g643S02" target="_blank" class="plan-btn plan-btn-gold">Essayer 7 jours gratuits</a>
+          <a href="https://buy.stripe.com/eVqbJ22mhfnJbAj5ka43S04" target="_blank" class="plan-btn plan-btn-outline">Annuel — 79,99€/an</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">StudyAI</span>
+    <span>Fait pour les étudiants 🎓</span>
+    <span>© 2025 StudyAI</span>
+  </div>
+</footer>
+
+<!-- BOUTON TOGGLE DEV (visible uniquement admin) -->
+<button class="dev-toggle" id="dev-toggle" onclick="toggleDevPanel()">🛠️ Dev</button>
+
+<!-- PANEL DÉVELOPPEUR -->
+<div id="dev-panel" style="display:none;position:fixed;bottom:3.5rem;right:1rem;z-index:9999;">
+  <div style="background:#13131f;border:1px solid rgba(124,109,250,0.4);border-radius:12px;padding:1rem;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+    <div style="font-size:0.75rem;font-weight:700;color:#a78bfa;margin-bottom:0.8rem;letter-spacing:0.08em;">🛠️ MODE DÉVELOPPEUR</div>
+    <div style="display:flex;flex-direction:column;gap:0.4rem;">
+      <button onclick="simulatePlan('starter')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">👤 Simuler Starter (5 gen)</button>
+      <button onclick="simulatePlan('pro')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">⚡ Simuler Pro (50 gen)</button>
+      <button onclick="simulatePlan('ultimate')" style="background:#1a1a2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:0.4rem 0.8rem;color:#a0a0c0;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">👑 Simuler Ultimate (∞)</button>
+      <button onclick="resetGenerations()" style="background:#1a1a2e;border:1px solid rgba(255,165,0,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#fb923c;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">🔢 Remettre générations à 0</button>
+      <button onclick="simulatePlan('reset')" style="background:#1a1a2e;border:1px solid rgba(124,109,250,0.3);border-radius:8px;padding:0.4rem 0.8rem;color:#a78bfa;font-size:0.78rem;cursor:pointer;text-align:left;font-family:DM Sans,sans-serif;">🔄 Réinitialiser tout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL = 'https://qyjqtjrqnlbgtxvnjvnk.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ';
+var DEV_EMAIL = 'ilanmoh228@gmail.com';
+var currentFormat = 'fiche', currentFormatName = 'Fiche de révision', currentFormatIcon = '📄';
+var tokensLeft = 5, lastResult = '', sessionHistory = [], currentUserEmail = null, savedUser = null;
+var devPanelOpen = false;
+
+function toggleMenu() {
+  var menu = document.getElementById('user-menu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+function deconnexion() {
+  localStorage.removeItem('studyai_user');
+  window.location.reload();
+}
+
+function toggleDevPanel() {
+  devPanelOpen = !devPanelOpen;
+  document.getElementById('dev-panel').style.display = devPanelOpen ? 'block' : 'none';
+  document.getElementById('dev-toggle').textContent = devPanelOpen ? '✕ Fermer Dev' : '🛠️ Dev';
+}
+
+function simulatePlan(plan) {
+  if (!savedUser) return;
+  if (plan === 'reset') { window.location.reload(); return; }
+  var limits = { starter: 5, pro: 50, ultimate: 999999 };
+  savedUser.plan = plan;
+  savedUser.remaining = limits[plan];
+  localStorage.setItem('studyai_user', JSON.stringify(savedUser));
+  var pd = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('plan-name').textContent = pd;
+  document.getElementById('tok-nav').textContent = limits[plan] === 999999 ? '∞' : limits[plan];
+  tokensLeft = limits[plan];
+  showToast('✅ Plan simulé : ' + pd);
+}
+
+function resetGenerations() {
+  if (!savedUser) return;
+  tokensLeft = 0;
+  savedUser.remaining = 0;
+  localStorage.setItem('studyai_user', JSON.stringify(savedUser));
+  document.getElementById('tok-nav').textContent = '0';
+  showToast('🔢 Générations remises à 0 — teste la limite !');
+}
+
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#13131f;border:1px solid rgba(124,109,250,0.4);color:#f1f0ff;padding:0.7rem 1.5rem;border-radius:100px;font-size:0.85rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 2500);
+}
+
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('user-menu');
+  var display = document.getElementById('user-display');
+  if (menu && display && !display.contains(e.target) && !menu.contains(e.target)) menu.style.display = 'none';
+});
+
+// ── SESSION ──
+try { savedUser = JSON.parse(localStorage.getItem('studyai_user')); } catch(e) {}
+if (savedUser && savedUser.email) {
+  currentUserEmail = savedUser.email;
+  document.getElementById('user-display').textContent = '👤 ' + savedUser.email.split('@')[0];
+  document.getElementById('user-display').style.display = 'inline-block';
+  document.getElementById('nav-login-link').style.display = 'none';
+  if (savedUser.remaining !== undefined) {
+    tokensLeft = savedUser.remaining;
+    document.getElementById('tok-nav').textContent = tokensLeft === 999999 ? '∞' : tokensLeft;
+  }
+  if (savedUser.plan) {
+    document.getElementById('plan-name').textContent = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
+  }
+  if (savedUser.email === DEV_EMAIL) {
+    document.getElementById('dev-toggle').style.display = 'block';
+  }
+}
+
+// ── INACTIVITÉ 30 MIN ──
+var inactivityTimer;
+function resetTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function() {
+    localStorage.removeItem('studyai_user');
+    window.location.href = '/login.html';
+  }, 30 * 60 * 1000);
+}
+document.addEventListener('mousemove', resetTimer);
+document.addEventListener('keypress', resetTimer);
+document.addEventListener('click', resetTimer);
+resetTimer();
+
+// ── FORMAT ──
+document.querySelectorAll('.fmt').forEach(function(el) {
+  el.addEventListener('click', function() {
+    document.querySelectorAll('.fmt').forEach(function(f) { f.classList.remove('active'); });
+    el.classList.add('active');
+    currentFormat = el.dataset.fmt;
+    currentFormatName = el.dataset.name;
+    currentFormatIcon = el.dataset.icon;
+  });
+});
+
+document.getElementById('course-input').addEventListener('input', function() {
+  document.getElementById('char-count').textContent = this.value.length + ' caractères';
+});
+
+// ── IMPORT ──
+document.getElementById('import-file-btn').addEventListener('click', function() {
+  document.getElementById('file-input').click();
+});
+
+document.getElementById('file-input').addEventListener('change', async function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var fileNameEl = document.getElementById('file-name');
+  fileNameEl.style.display = 'block';
+  if (file.type === 'text/plain') {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('course-input').value = ev.target.result;
+      document.getElementById('char-count').textContent = ev.target.result.length + ' caractères';
+      fileNameEl.textContent = '✅ ' + file.name + ' chargé';
+    };
+    reader.readAsText(file);
+  } else if (file.type === 'application/pdf') {
+    fileNameEl.textContent = '⏳ Lecture du PDF en cours...';
+    var reader = new FileReader();
+    reader.onload = async function(ev) {
+      try {
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        var pdf = await pdfjsLib.getDocument({data: ev.target.result}).promise;
+        var plan = savedUser ? (savedUser.plan || 'starter') : 'starter';
+        var pageLimit = plan === 'ultimate' ? 100 : plan === 'pro' ? 40 : 15;
+        var maxPages = Math.min(pdf.numPages, pageLimit);
+        var text = '';
+        for (var i = 1; i <= maxPages; i++) {
+          var page = await pdf.getPage(i);
+          var content = await page.getTextContent();
+          text += content.items.map(function(item) { return item.str; }).join(' ') + '\n';
+        }
+        document.getElementById('course-input').value = text;
+        document.getElementById('char-count').textContent = text.length + ' caractères';
+        fileNameEl.textContent = '✅ PDF lu — ' + maxPages + '/' + pdf.numPages + ' pages (limite ' + pageLimit + ' p. pour ton plan)';
+      } catch(err) {
+        fileNameEl.textContent = '⚠️ Erreur lecture PDF — colle le texte manuellement';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    fileNameEl.textContent = '⚠️ Format non supporté — utilise PDF ou TXT';
+  }
+});
+
+// ── GÉNÉRATION ──
+document.getElementById('gen-btn').addEventListener('click', async function() {
+  var input = document.getElementById('course-input').value.trim();
+  var errBox = document.getElementById('error-box');
+  errBox.style.display = 'none';
+  if (!input) { errBox.textContent = '⚠️ Colle ou importe ton cours !'; errBox.style.display = 'block'; return; }
+  if (input.length < 30) { errBox.textContent = '⚠️ Le cours est trop court.'; errBox.style.display = 'block'; return; }
+  if (tokensLeft <= 0) { errBox.textContent = '⚠️ Tu as utilisé toutes tes générations. Passe à Pro pour continuer !'; errBox.style.display = 'block'; return; }
+
+  var btn = document.getElementById('gen-btn');
+  btn.disabled = true; btn.textContent = 'Génération en cours…';
+  var resultCard = document.getElementById('result-card');
+  var spinner = document.getElementById('result-spinner');
+  var content = document.getElementById('result-content');
+  resultCard.style.display = 'block'; spinner.style.display = 'flex'; content.style.display = 'none';
+  resultCard.scrollIntoView({ behavior: 'smooth' });
+
+  try {
+    var response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ course: input.substring(0, 8000), format: currentFormat, language: document.getElementById('lang-sel').value, email: currentUserEmail })
+    });
+    var data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    lastResult = data.result;
+    content.textContent = data.result;
+    document.getElementById('result-title').textContent = currentFormatIcon + ' ' + currentFormatName;
+    spinner.style.display = 'none'; content.style.display = 'block';
+
+    if (tokensLeft !== 999999) {
+      tokensLeft--;
+      document.getElementById('tok-nav').textContent = tokensLeft;
+      if (savedUser) { savedUser.remaining = tokensLeft; localStorage.setItem('studyai_user', JSON.stringify(savedUser)); }
+    }
+
+    if (currentUserEmail) {
+      var lignes = data.result.split('\n').filter(function(l){ return l.trim().length > 3; });
+      var titre = (lignes[1] || lignes[0] || currentFormatName).replace(/[📚🎯📖⚡❓🔗━▸✦]/g, '').trim().substring(0, 80);
+      fetch(SUPABASE_URL + '/rest/v1/fiches', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ user_email: currentUserEmail, format: currentFormat, format_icon: currentFormatIcon, titre: titre, contenu: data.result })
+      }).catch(function(e){ console.log('Erreur sauvegarde:', e); });
+    }
+
+    sessionHistory.unshift({ icon: currentFormatIcon, name: currentFormatName, preview: input.substring(0, 55) + '…', result: data.result });
+    if (sessionHistory.length > 6) sessionHistory.pop();
+    renderHistory();
+
+  } catch(e) {
+    spinner.style.display = 'none';
+    content.textContent = '⚠️ Une erreur est survenue : ' + e.message;
+    content.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Générer avec l\'IA';
+});
+
+document.getElementById('copy-btn').addEventListener('click', function() {
+  navigator.clipboard.writeText(lastResult).then(function() {
+    document.getElementById('copy-btn').textContent = '✅ Copié !';
+    setTimeout(function() { document.getElementById('copy-btn').textContent = '📋 Copier'; }, 2000);
+  });
+});
+
+document.getElementById('download-btn').addEventListener('click', function() {
+  var blob = new Blob([lastResult], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'StudyAI_' + currentFormatName + '.txt'; a.click();
+});
+
+document.getElementById('reset-btn').addEventListener('click', function() {
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('course-input').value = '';
+  document.getElementById('char-count').textContent = '0 caractères';
+  document.getElementById('file-name').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function renderHistory() {
+  var section = document.getElementById('history-section');
+  var list = document.getElementById('history-list');
+  if (sessionHistory.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = sessionHistory.map(function(h, i) {
+    return '<div class="hist-item" onclick="loadHistory(' + i + ')"><span class="hist-fmt">' + h.icon + '</span><span class="hist-preview">' + h.name + ' — ' + h.preview + '</span></div>';
+  }).join('');
+}
+
+function loadHistory(i) {
+  var h = sessionHistory[i];
+  document.getElementById('result-content').textContent = h.result;
+  document.getElementById('result-title').textContent = h.icon + ' ' + h.name;
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('result-spinner').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  lastResult = h.result;
+}
+</script>
+</body>
+</html>
