@@ -790,24 +790,25 @@ function exportToPDF(content, title, format) {
 
   var style = document.createElement('style');
   style.textContent = '\
-    .pdf-section{font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#6c5ce7;margin:22px 0 10px;padding-left:12px;border-left:3px solid #fd79a8;}\
-    .pdf-p{font-size:13.5px;line-height:1.7;margin:0 0 10px;color:#2d2d3d;}\
+    .pdf-section{font-family:Helvetica,Arial,sans-serif;font-size:15px;font-weight:700;color:#6c5ce7;margin:22px 0 10px;padding-left:12px;border-left:3px solid #fd79a8;page-break-after:avoid;break-after:avoid;page-break-inside:avoid;break-inside:avoid;}\
+    .pdf-p{font-size:13.5px;line-height:1.7;margin:0 0 10px;color:#2d2d3d;page-break-inside:avoid;break-inside:avoid;orphans:3;widows:3;}\
     .pdf-list{margin:0 0 12px;padding-left:0;list-style:none;}\
-    .pdf-list li{font-size:13.5px;line-height:1.7;margin-bottom:8px;padding-left:18px;position:relative;color:#2d2d3d;}\
+    .pdf-list li{font-size:13.5px;line-height:1.7;margin-bottom:8px;padding-left:18px;position:relative;color:#2d2d3d;page-break-inside:avoid;break-inside:avoid;}\
     .pdf-list li::before{content:"●";color:#fd79a8;position:absolute;left:0;font-size:9px;top:6px;}\
-    .pdf-sep{border:none;border-top:1px solid #e8e6f5;margin:18px 0;}\
+    .pdf-sep{border:none;border-top:1px solid #e8e6f5;margin:18px 0;page-break-inside:avoid;break-inside:avoid;}\
     strong{color:#1a1a2e;font-weight:700;}\
+    .pdf-body{padding-bottom:30px;}\
   ';
   container.appendChild(style);
   document.body.appendChild(container);
 
   var opt = {
-    margin: 0,
+    margin: [40, 0, 40, 0],
     filename: 'FicheAI_' + cleanTitle.replace(/[^a-zA-Z0-9]/g,'_').substring(0,40) + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
+    html2canvas: { scale: 2, useCORS: true, windowWidth: 780 },
     jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: ['css', 'avoid-all'], avoid: ['.pdf-p', '.pdf-list li', '.pdf-section', 'h1'] }
   };
 
   html2pdf().set(opt).from(container).save().then(function() {
