@@ -8,21 +8,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#07070f;--bg2:#0d0d1a;--bg3:#111120;--surface:#181830;
-  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
-  --purple:#6c5ce7;--purple2:#a29bfe;--pink:#fd79a8;--cyan:#00cec9;--gold:#fdcb6e;
-  --text:#f0efff;--text2:#9898b8;--text3:#555570;
-  --font-h:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;
-  --ease:cubic-bezier(0.4,0,0.2,1);
-}
+:root{--bg:#07070f;--bg2:#0d0d1a;--bg3:#111120;--surface:#181830;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--purple:#6c5ce7;--purple2:#a29bfe;--pink:#fd79a8;--cyan:#00cec9;--gold:#fdcb6e;--text:#f0efff;--text2:#9898b8;--text3:#555570;--font-h:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--ease:cubic-bezier(0.4,0,0.2,1);}
 html{scroll-behavior:smooth}
 body{font-family:var(--font-b);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-thumb{background:linear-gradient(var(--purple),var(--pink));border-radius:100px}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse at 15% 20%,rgba(108,92,231,0.07) 0%,transparent 55%),
-             radial-gradient(ellipse at 85% 80%,rgba(253,121,168,0.04) 0%,transparent 55%)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 15% 20%,rgba(108,92,231,0.07) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(253,121,168,0.04) 0%,transparent 55%)}
 nav{position:sticky;top:0;z-index:100;background:rgba(7,7,15,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem}
 .logo{font-family:var(--font-h);font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:10px;text-decoration:none;background:linear-gradient(135deg,var(--purple2),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .logo-icon{width:32px;height:32px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,var(--purple),var(--pink));display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(108,92,231,0.3);transition:transform 0.2s}
@@ -255,7 +246,7 @@ textarea::placeholder{color:var(--text3)}
           <div class="result-actions">
             <button id="copy-btn">📋 Copier</button>
             <button id="download-btn">⬇️ TXT</button>
-            <button id="pdf-btn" onclick="exportToPDF(lastResult, currentFormatIcon+' '+currentFormatName, currentFormatName)">📄 PDF</button>
+            <button id="pdf-btn" onclick="exportToPDF(lastResult,currentFormatIcon+' '+currentFormatName,currentFormatName)">📄 PDF</button>
             <button id="reset-btn">↩ Nouveau</button>
           </div>
         </div>
@@ -319,351 +310,477 @@ textarea::placeholder{color:var(--text3)}
 </div>
 
 <script>
-var SUPABASE_URL='https://qyjqtjrqnlbgtxvnjvnk.supabase.co';
-var SUPABASE_KEY='sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ';
-var DEV_EMAIL='ilanmoh228@gmail.com';
-var PRO_M='https://buy.stripe.com/00wfZibWR8Zl8o7eUK43S05';
-var ULT_M='https://buy.stripe.com/aFadRaaSN2AX33NeUK43S07';
-var currentFormat='fiche',currentFormatName='Fiche de révision',currentFormatIcon='📄';
-var tokensLeft=5,lastResult='',sessionHistory=[],currentUserEmail=null,savedUser=null;
-var devPanelOpen=false,currentMode='express';
-var courseContent='',chatHistory=[],chatMsgCount=0;
+var SUPABASE_URL = 'https://qyjqtjrqnlbgtxvnjvnk.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_opljKH5NsZwkuLpYQAyh4A_9FwNc4yJ';
+var DEV_EMAIL = 'ilanmoh228@gmail.com';
+var PRO_M = 'https://buy.stripe.com/00wfZibWR8Zl8o7eUK43S05';
+var ULT_M = 'https://buy.stripe.com/aFadRaaSN2AX33NeUK43S07';
+var currentFormat = 'fiche', currentFormatName = 'Fiche de révision', currentFormatIcon = '📄';
+var tokensLeft = 5, lastResult = '', sessionHistory = [], currentUserEmail = null, savedUser = null;
+var devPanelOpen = false, currentMode = 'express';
+var courseContent = '', chatHistory = [], chatMsgCount = 0;
 
-function showToast(msg){
-  var t=document.createElement('div');t.textContent=msg;
-  t.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#0d0d1a;border:1px solid rgba(108,92,231,0.4);color:#f0efff;padding:0.7rem 1.5rem;border-radius:100px;font-size:0.85rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;';
-  document.body.appendChild(t);setTimeout(function(){t.remove();},2500);
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#0d0d1a;border:1px solid rgba(108,92,231,0.4);color:#f0efff;padding:0.7rem 1.5rem;border-radius:100px;font-size:0.85rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,0.4);white-space:nowrap;';
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 2500);
 }
 
-function toggleMenu(){var m=document.getElementById('user-menu');m.style.display=m.style.display==='block'?'none':'block';}
-function deconnexion(){localStorage.removeItem('ficheai_user');window.location.href='/';}
-document.addEventListener('click',function(e){
-  var menu=document.getElementById('user-menu'),display=document.getElementById('user-display');
-  if(menu&&display&&!display.contains(e.target)&&!menu.contains(e.target))menu.style.display='none';
+function toggleMenu() {
+  var m = document.getElementById('user-menu');
+  m.style.display = m.style.display === 'block' ? 'none' : 'block';
+}
+
+function deconnexion() {
+  localStorage.removeItem('ficheai_user');
+  window.location.href = '/';
+}
+
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('user-menu'), display = document.getElementById('user-display');
+  if (menu && display && !display.contains(e.target) && !menu.contains(e.target)) menu.style.display = 'none';
 });
 
-function toggleDevPanel(){devPanelOpen=!devPanelOpen;document.getElementById('dev-panel').style.display=devPanelOpen?'block':'none';document.getElementById('dev-toggle').textContent=devPanelOpen?'✕ Dev':'🛠️ Dev';}
+function toggleDevPanel() {
+  devPanelOpen = !devPanelOpen;
+  document.getElementById('dev-panel').style.display = devPanelOpen ? 'block' : 'none';
+  document.getElementById('dev-toggle').textContent = devPanelOpen ? '✕ Dev' : '🛠️ Dev';
+}
 
-function simulatePlan(plan){
-  if(!savedUser)return;
-  if(plan==='reset'){window.location.reload();return;}
-  var limits={starter:5,pro:50,ultimate:999999};
-  savedUser.plan=plan;savedUser.remaining=limits[plan];
-  localStorage.setItem('ficheai_user',JSON.stringify(savedUser));
-  document.getElementById('plan-name').textContent=plan.charAt(0).toUpperCase()+plan.slice(1);
-  document.getElementById('tok-nav').textContent=limits[plan]===999999?'∞':limits[plan];
-  tokensLeft=limits[plan];
-  showToast('✅ Plan simulé : '+plan);
+function simulatePlan(plan) {
+  if (!savedUser) return;
+  if (plan === 'reset') { window.location.reload(); return; }
+  var limits = { starter: 5, pro: 50, ultimate: 999999 };
+  savedUser.plan = plan;
+  savedUser.remaining = limits[plan];
+  localStorage.setItem('ficheai_user', JSON.stringify(savedUser));
+  document.getElementById('plan-name').textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+  document.getElementById('tok-nav').textContent = limits[plan] === 999999 ? '∞' : limits[plan];
+  tokensLeft = limits[plan];
+  showToast('✅ Plan simulé : ' + plan);
   updateNavUpgradeBtn();
-  if(currentMode==='chat')renderChatMode();
+  if (currentMode === 'chat') renderChatMode();
 }
 
-function resetGenerations(){
-  if(!savedUser)return;tokensLeft=0;savedUser.remaining=0;
-  localStorage.setItem('ficheai_user',JSON.stringify(savedUser));
-  document.getElementById('tok-nav').textContent='0';showToast('🔢 Générations à 0 !');
+function resetGenerations() {
+  if (!savedUser) return;
+  tokensLeft = 0;
+  savedUser.remaining = 0;
+  localStorage.setItem('ficheai_user', JSON.stringify(savedUser));
+  document.getElementById('tok-nav').textContent = '0';
+  showToast('🔢 Générations à 0 !');
 }
 
-function updateNavUpgradeBtn(){
-  var btn=document.getElementById('nav-upgrade-btn');
-  if(!btn)return;
-  var plan=savedUser?(savedUser.plan||'starter'):'starter';
-  btn.removeAttribute('style');
-  btn.className='nav-upgrade';
-  if(plan==='starter'){
-    btn.textContent='Passer à Pro →';
-    btn.href=PRO_M;
-    btn.target='_blank';
-    btn.style.cssText='background:linear-gradient(135deg,#6c5ce7,#fd79a8);box-shadow:0 2px 12px rgba(108,92,231,0.3);display:inline-block;';
-  }else if(plan==='pro'){
-    btn.textContent='✨ Passer à Ultimate →';
-    btn.href=ULT_M;
-    btn.target='_blank';
-    btn.style.cssText='background:linear-gradient(135deg,#f6d365,#fda085);box-shadow:0 2px 12px rgba(253,163,133,0.4);display:inline-block;color:white;';
-  }else{
-    btn.textContent='👑 Ultimate';
-    btn.href='#';
-    btn.target='_self';
-    btn.style.cssText='background:linear-gradient(135deg,#fdcb6e,#e17055);box-shadow:0 2px 12px rgba(225,112,85,0.35);display:inline-block;cursor:default;pointer-events:none;opacity:0.85;';
+function updateNavUpgradeBtn() {
+  var btn = document.getElementById('nav-upgrade-btn');
+  if (!btn) return;
+  var plan = savedUser ? (savedUser.plan || 'starter') : 'starter';
+  if (plan === 'starter') {
+    btn.textContent = 'Passer à Pro →';
+    btn.href = PRO_M;
+    btn.target = '_blank';
+    btn.style.cssText = 'background:linear-gradient(135deg,#6c5ce7,#fd79a8);box-shadow:0 2px 12px rgba(108,92,231,0.3);display:inline-block;color:white;padding:0.38rem 1rem;border-radius:100px;font-size:0.82rem;font-weight:700;text-decoration:none;';
+  } else if (plan === 'pro') {
+    btn.textContent = '✨ Passer à Ultimate →';
+    btn.href = ULT_M;
+    btn.target = '_blank';
+    btn.style.cssText = 'background:linear-gradient(135deg,#f6d365,#fda085);box-shadow:0 2px 12px rgba(253,163,133,0.4);display:inline-block;color:white;padding:0.38rem 1rem;border-radius:100px;font-size:0.82rem;font-weight:700;text-decoration:none;';
+  } else {
+    btn.textContent = '👑 Ultimate';
+    btn.href = '#';
+    btn.target = '_self';
+    btn.style.cssText = 'background:linear-gradient(135deg,#fdcb6e,#e17055);display:inline-block;color:white;padding:0.38rem 1rem;border-radius:100px;font-size:0.82rem;font-weight:700;text-decoration:none;cursor:default;pointer-events:none;opacity:0.85;';
   }
 }
 
-try{savedUser=JSON.parse(localStorage.getItem('ficheai_user'));}catch(e){}
+try { savedUser = JSON.parse(localStorage.getItem('ficheai_user')); } catch(e) {}
 
-if(savedUser&&savedUser.email){
-  currentUserEmail=savedUser.email;
-  document.getElementById('user-display').textContent='👤 '+savedUser.email.split('@')[0];
-  document.getElementById('user-display').style.display='inline-block';
-  document.getElementById('nav-login-link').style.display='none';
-  if(savedUser.remaining!==undefined){tokensLeft=savedUser.remaining;document.getElementById('tok-nav').textContent=tokensLeft===999999?'∞':tokensLeft;}
-  if(savedUser.plan)document.getElementById('plan-name').textContent=savedUser.plan.charAt(0).toUpperCase()+savedUser.plan.slice(1);
-  if(savedUser.email===DEV_EMAIL)document.getElementById('dev-toggle').style.display='block';
-  document.getElementById('stats-card').style.display='block';
-  document.getElementById('stat-gen').textContent=tokensLeft===999999?'∞':tokensLeft;
+if (savedUser && savedUser.email) {
+  currentUserEmail = savedUser.email;
+  document.getElementById('user-display').textContent = '👤 ' + savedUser.email.split('@')[0];
+  document.getElementById('user-display').style.display = 'inline-block';
+  document.getElementById('nav-login-link').style.display = 'none';
+  if (savedUser.remaining !== undefined) {
+    tokensLeft = savedUser.remaining;
+    document.getElementById('tok-nav').textContent = tokensLeft === 999999 ? '∞' : tokensLeft;
+  }
+  if (savedUser.plan) document.getElementById('plan-name').textContent = savedUser.plan.charAt(0).toUpperCase() + savedUser.plan.slice(1);
+  if (savedUser.email === DEV_EMAIL) document.getElementById('dev-toggle').style.display = 'block';
+  document.getElementById('stats-card').style.display = 'block';
+  document.getElementById('stat-gen').textContent = tokensLeft === 999999 ? '∞' : tokensLeft;
   loadFichesCount();
 }
 updateNavUpgradeBtn();
 
-if(/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)){
-  document.getElementById('camera-btn').style.display='flex';
+if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) {
+  document.getElementById('camera-btn').style.display = 'flex';
 }
 
-async function loadFichesCount(){
-  if(!currentUserEmail)return;
-  try{
-    var r=await fetch(SUPABASE_URL+'/rest/v1/fiches?user_email=eq.'+encodeURIComponent(currentUserEmail)+'&select=id',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
-    var data=await r.json();
-    if(Array.isArray(data))document.getElementById('stat-fiches').textContent=data.length;
-  }catch(e){}
+async function loadFichesCount() {
+  if (!currentUserEmail) return;
+  try {
+    var r = await fetch(SUPABASE_URL + '/rest/v1/fiches?user_email=eq.' + encodeURIComponent(currentUserEmail) + '&select=id', { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } });
+    var data = await r.json();
+    if (Array.isArray(data)) document.getElementById('stat-fiches').textContent = data.length;
+  } catch(e) {}
 }
 
 var inactivityTimer;
-function resetTimer(){clearTimeout(inactivityTimer);inactivityTimer=setTimeout(function(){localStorage.removeItem('ficheai_user');window.location.href='/login.html';},30*60*1000);}
-document.addEventListener('mousemove',resetTimer);document.addEventListener('keypress',resetTimer);document.addEventListener('click',resetTimer);resetTimer();
+function resetTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(function() { localStorage.removeItem('ficheai_user'); window.location.href = '/login.html'; }, 30 * 60 * 1000);
+}
+document.addEventListener('mousemove', resetTimer);
+document.addEventListener('keypress', resetTimer);
+document.addEventListener('click', resetTimer);
+resetTimer();
 
-function switchMode(mode){
-  currentMode=mode;
-  document.getElementById('mode-express-btn').classList.toggle('active',mode==='express');
-  document.getElementById('mode-chat-btn').classList.toggle('active',mode==='chat');
-  document.getElementById('express-area').style.display=mode==='express'?'flex':'none';
-  document.getElementById('chat-area').style.display=mode==='chat'?'flex':'none';
-  if(mode==='chat')renderChatMode();
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-express-btn').classList.toggle('active', mode === 'express');
+  document.getElementById('mode-chat-btn').classList.toggle('active', mode === 'chat');
+  document.getElementById('express-area').style.display = mode === 'express' ? 'flex' : 'none';
+  document.getElementById('chat-area').style.display = mode === 'chat' ? 'flex' : 'none';
+  if (mode === 'chat') renderChatMode();
 }
 
-function renderChatMode(){
-  var plan=savedUser?(savedUser.plan||'starter'):'starter';
-  var chatArea=document.getElementById('chat-area');
-  if(plan==='starter'){
-    chatArea.innerHTML='<div class="plan-lock"><div class="plan-lock-icon">💬</div><h3>Chat IA — Plan Pro requis</h3><p>Discute librement avec l\'IA sur ton cours, demande des explications personnalisées et génère du contenu sur mesure.</p><div class="plan-lock-features"><span class="plan-lock-feat">💬 20 messages/mois</span><span class="plan-lock-feat">🧠 Contexte de cours</span><span class="plan-lock-feat">💾 Sauvegarde des réponses</span><span class="plan-lock-feat">🎯 Questions d\'exam</span></div><a href="'+PRO_M+'" target="_blank">Passer à Pro — 7,99€/mois</a></div>';
+function renderChatMode() {
+  var plan = savedUser ? (savedUser.plan || 'starter') : 'starter';
+  if (plan === 'starter') {
+    document.getElementById('chat-area').innerHTML = '<div class="plan-lock"><div class="plan-lock-icon">💬</div><h3>Chat IA — Plan Pro requis</h3><p>Discute librement avec l\'IA sur ton cours, demande des explications personnalisées et génère du contenu sur mesure.</p><div class="plan-lock-features"><span class="plan-lock-feat">💬 20 messages/mois</span><span class="plan-lock-feat">🧠 Contexte de cours</span><span class="plan-lock-feat">💾 Sauvegarde des réponses</span><span class="plan-lock-feat">🎯 Questions d\'exam</span></div><a href="' + PRO_M + '" target="_blank">Passer à Pro — 7,99€/mois</a></div>';
   }
 }
 
-function selectFormat(el){
-  document.querySelectorAll('.fmt').forEach(function(f){f.classList.remove('active');});
+function selectFormat(el) {
+  document.querySelectorAll('.fmt').forEach(function(f) { f.classList.remove('active'); });
   el.classList.add('active');
-  currentFormat=el.dataset.fmt;currentFormatName=el.dataset.name;currentFormatIcon=el.dataset.icon;
+  currentFormat = el.dataset.fmt;
+  currentFormatName = el.dataset.name;
+  currentFormatIcon = el.dataset.icon;
 }
 
-function genererDirectement(){document.getElementById('gen-btn').click();}
+function genererDirectement() { document.getElementById('gen-btn').click(); }
 
-function handleFileLoad(file){
-  var badge=document.getElementById('file-badge');badge.style.display='block';
-  if(file.type==='text/plain'){
-    var reader=new FileReader();
-    reader.onload=function(ev){courseContent=ev.target.result;document.getElementById('course-input').value=courseContent;document.getElementById('char-count').textContent=courseContent.length+' caractères';badge.textContent='✅ '+file.name;updateChatContext(file.name);};
+function handleFileLoad(file) {
+  var badge = document.getElementById('file-badge');
+  badge.style.display = 'block';
+  if (file.type === 'text/plain') {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      courseContent = ev.target.result;
+      document.getElementById('course-input').value = courseContent;
+      document.getElementById('char-count').textContent = courseContent.length + ' caractères';
+      badge.textContent = '✅ ' + file.name;
+      updateChatContext(file.name);
+    };
     reader.readAsText(file);
-  }else if(file.type==='application/pdf'){
-    badge.textContent='⏳ Lecture PDF...';
-    var reader=new FileReader();
-    reader.onload=async function(ev){
-      try{
-        var pdfjsLib=window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        var pdf=await pdfjsLib.getDocument({data:ev.target.result}).promise;
-        var plan=savedUser?(savedUser.plan||'starter'):'starter';
-        var pageLimit=plan==='ultimate'?100:plan==='pro'?40:15;
-        var maxPages=Math.min(pdf.numPages,pageLimit);
-        var text='';
-        for(var i=1;i<=maxPages;i++){var page=await pdf.getPage(i);var content=await page.getTextContent();text+=content.items.map(function(item){return item.str;}).join(' ')+'\n';}
-        courseContent=text;document.getElementById('course-input').value=text;document.getElementById('char-count').textContent=text.length+' caractères';
-        badge.textContent='✅ '+file.name+' ('+maxPages+'/'+pdf.numPages+' p.)';updateChatContext(file.name);
-      }catch(err){badge.textContent='⚠️ Erreur lecture PDF';}
-    };reader.readAsArrayBuffer(file);
-  }else if(file.type.startsWith('image/')){
-    badge.textContent='📷 Photo importée — utilise le Chat IA pour l\'analyser';
-    courseContent='[Photo importée]';updateChatContext('photo');
-  }else{badge.textContent='⚠️ Format non supporté';}
+  } else if (file.type === 'application/pdf') {
+    badge.textContent = '⏳ Lecture PDF...';
+    var reader = new FileReader();
+    reader.onload = async function(ev) {
+      try {
+        var pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        var pdf = await pdfjsLib.getDocument({ data: ev.target.result }).promise;
+        var plan = savedUser ? (savedUser.plan || 'starter') : 'starter';
+        var pageLimit = plan === 'ultimate' ? 100 : plan === 'pro' ? 40 : 15;
+        var maxPages = Math.min(pdf.numPages, pageLimit);
+        var text = '';
+        for (var i = 1; i <= maxPages; i++) {
+          var page = await pdf.getPage(i);
+          var content = await page.getTextContent();
+          text += content.items.map(function(item) { return item.str; }).join(' ') + '\n';
+        }
+        courseContent = text;
+        document.getElementById('course-input').value = text;
+        document.getElementById('char-count').textContent = text.length + ' caractères';
+        badge.textContent = '✅ ' + file.name + ' (' + maxPages + '/' + pdf.numPages + ' p.)';
+        updateChatContext(file.name);
+      } catch(err) { badge.textContent = '⚠️ Erreur lecture PDF'; }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if (file.type.startsWith('image/')) {
+    badge.textContent = '📷 Photo importée — utilise le Chat IA pour l\'analyser';
+    courseContent = '[Photo importée]';
+    updateChatContext('photo');
+  } else {
+    badge.textContent = '⚠️ Format non supporté';
+  }
 }
 
-document.getElementById('file-input').addEventListener('change',function(e){if(e.target.files[0])handleFileLoad(e.target.files[0]);});
-document.getElementById('camera-input').addEventListener('change',function(e){if(e.target.files[0])handleFileLoad(e.target.files[0]);});
-document.getElementById('course-input').addEventListener('input',function(){document.getElementById('char-count').textContent=this.value.length+' caractères';courseContent=this.value;});
-function updateChatContext(filename){var el=document.getElementById('chat-context-text');if(el)el.innerHTML='Cours chargé : <span>'+filename+'</span>';}
-
-document.getElementById('gen-btn').addEventListener('click',async function(){
-  var input=document.getElementById('course-input').value.trim();
-  var errBox=document.getElementById('error-box');errBox.style.display='none';
-  if(!input){errBox.textContent='⚠️ Colle ou importe ton cours !';errBox.style.display='block';return;}
-  if(input.length<30){errBox.textContent='⚠️ Le cours est trop court.';errBox.style.display='block';return;}
-  if(tokensLeft<=0){errBox.textContent='⚠️ Tu as utilisé toutes tes générations. Passe à Pro !';errBox.style.display='block';return;}
-  var btn=this;btn.disabled=true;btn.textContent='Génération en cours…';
-  var resultCard=document.getElementById('result-card'),spinner=document.getElementById('result-spinner'),content=document.getElementById('result-content');
-  resultCard.style.display='block';spinner.style.display='flex';content.style.display='none';
-  resultCard.scrollIntoView({behavior:'smooth',block:'nearest'});
-  try{
-    var response=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({course:input.substring(0,8000),format:currentFormat,language:document.getElementById('lang-sel').value,email:currentUserEmail})});
-    var data=await response.json();
-    if(data.error)throw new Error(data.error);
-    lastResult=data.result;content.textContent=data.result;
-    document.getElementById('result-title').textContent=currentFormatIcon+' '+currentFormatName;
-    spinner.style.display='none';content.style.display='block';
-    if(tokensLeft!==999999){tokensLeft--;document.getElementById('tok-nav').textContent=tokensLeft;document.getElementById('stat-gen').textContent=tokensLeft;if(savedUser){savedUser.remaining=tokensLeft;localStorage.setItem('ficheai_user',JSON.stringify(savedUser));}}
-    if(currentUserEmail){
-      var lignes=data.result.split('\n').filter(function(l){return l.trim().length>3;});
-      var titre=(lignes[1]||lignes[0]||currentFormatName).replace(/[📚🎯📖⚡❓🔗━▸✦]/g,'').trim().substring(0,80);
-      fetch(SUPABASE_URL+'/rest/v1/fiches',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},body:JSON.stringify({user_email:currentUserEmail,format:currentFormat,format_icon:currentFormatIcon,titre:titre,contenu:data.result})}).then(function(){loadFichesCount();}).catch(function(){});
-    }
-    sessionHistory.unshift({icon:currentFormatIcon,name:currentFormatName,preview:input.substring(0,55)+'…',result:data.result});
-    if(sessionHistory.length>6)sessionHistory.pop();
-    renderHistory();
-  }catch(e){spinner.style.display='none';content.textContent='⚠️ Erreur : '+e.message;content.style.display='block';}
-  btn.disabled=false;
-  btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Générer avec l\'IA';
+document.getElementById('file-input').addEventListener('change', function(e) { if (e.target.files[0]) handleFileLoad(e.target.files[0]); });
+document.getElementById('camera-input').addEventListener('change', function(e) { if (e.target.files[0]) handleFileLoad(e.target.files[0]); });
+document.getElementById('course-input').addEventListener('input', function() {
+  document.getElementById('char-count').textContent = this.value.length + ' caractères';
+  courseContent = this.value;
 });
 
-document.getElementById('copy-btn').addEventListener('click',function(){navigator.clipboard.writeText(lastResult).then(function(){document.getElementById('copy-btn').textContent='✅ Copié !';setTimeout(function(){document.getElementById('copy-btn').textContent='📋 Copier';},2000);});});
-document.getElementById('download-btn').addEventListener('click',function(){var blob=new Blob([lastResult],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='FicheAI_'+currentFormatName+'.txt';a.click();});
-document.getElementById('reset-btn').addEventListener('click',function(){document.getElementById('result-card').style.display='none';document.getElementById('course-input').value='';document.getElementById('char-count').textContent='0 caractères';document.getElementById('file-badge').style.display='none';window.scrollTo({top:0,behavior:'smooth'});});
-
-function renderHistory(){
-  var section=document.getElementById('history-section'),list=document.getElementById('history-list');
-  if(!section)return;
-  if(sessionHistory.length===0){section.style.display='none';return;}
-  section.style.display='block';
-  list.innerHTML=sessionHistory.map(function(h,i){return '<div class="hist-item" onclick="loadHistory('+i+')"><span class="hist-fmt">'+h.icon+'</span><span class="hist-preview">'+h.name+' — '+h.preview+'</span></div>';}).join('');
-}
-function loadHistory(i){
-  var h=sessionHistory[i];
-  document.getElementById('result-content').textContent=h.result;
-  document.getElementById('result-title').textContent=h.icon+' '+h.name;
-  document.getElementById('result-card').style.display='block';
-  document.getElementById('result-spinner').style.display='none';
-  document.getElementById('result-content').style.display='block';
-  lastResult=h.result;
+function updateChatContext(filename) {
+  var el = document.getElementById('chat-context-text');
+  if (el) el.innerHTML = 'Cours chargé : <span>' + filename + '</span>';
 }
 
-function getPlan(){return savedUser?(savedUser.plan||'starter'):'starter';}
+document.getElementById('gen-btn').addEventListener('click', async function() {
+  var input = document.getElementById('course-input').value.trim();
+  var errBox = document.getElementById('error-box');
+  errBox.style.display = 'none';
+  if (!input) { errBox.textContent = '⚠️ Colle ou importe ton cours !'; errBox.style.display = 'block'; return; }
+  if (input.length < 30) { errBox.textContent = '⚠️ Le cours est trop court.'; errBox.style.display = 'block'; return; }
+  if (tokensLeft <= 0) { errBox.textContent = '⚠️ Tu as utilisé toutes tes générations. Passe à Pro !'; errBox.style.display = 'block'; return; }
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Génération en cours…';
+  var resultCard = document.getElementById('result-card'), spinner = document.getElementById('result-spinner'), content = document.getElementById('result-content');
+  resultCard.style.display = 'block';
+  spinner.style.display = 'flex';
+  content.style.display = 'none';
+  resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  try {
+    var response = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ course: input.substring(0, 8000), format: currentFormat, language: document.getElementById('lang-sel').value, email: currentUserEmail }) });
+    var data = await response.json();
+    if (data.error) throw new Error(data.error);
+    lastResult = data.result;
+    content.textContent = data.result;
+    document.getElementById('result-title').textContent = currentFormatIcon + ' ' + currentFormatName;
+    spinner.style.display = 'none';
+    content.style.display = 'block';
+    if (tokensLeft !== 999999) {
+      tokensLeft--;
+      document.getElementById('tok-nav').textContent = tokensLeft;
+      document.getElementById('stat-gen').textContent = tokensLeft;
+      if (savedUser) { savedUser.remaining = tokensLeft; localStorage.setItem('ficheai_user', JSON.stringify(savedUser)); }
+    }
+    if (currentUserEmail) {
+      var lignes = data.result.split('\n').filter(function(l) { return l.trim().length > 3; });
+      var titre = (lignes[1] || lignes[0] || currentFormatName).replace(/[📚🎯📖⚡❓🔗━▸✦]/g, '').trim().substring(0, 80);
+      fetch(SUPABASE_URL + '/rest/v1/fiches', { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' }, body: JSON.stringify({ user_email: currentUserEmail, format: currentFormat, format_icon: currentFormatIcon, titre: titre, contenu: data.result }) }).then(function() { loadFichesCount(); }).catch(function() {});
+    }
+    sessionHistory.unshift({ icon: currentFormatIcon, name: currentFormatName, preview: input.substring(0, 55) + '…', result: data.result });
+    if (sessionHistory.length > 6) sessionHistory.pop();
+    renderHistory();
+  } catch(e) {
+    spinner.style.display = 'none';
+    content.textContent = '⚠️ Erreur : ' + e.message;
+    content.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Générer avec l\'IA';
+});
 
-function useCourseInChat(){
-  var course=document.getElementById('course-input').value.trim();
-  if(!course){showToast('⚠️ Colle ou importe un cours d\'abord !');return;}
-  courseContent=course;
-  var el=document.getElementById('chat-context-text');
-  if(el)el.innerHTML='Cours chargé : <span>'+course.substring(0,50)+'...</span>';
+document.getElementById('copy-btn').addEventListener('click', function() {
+  navigator.clipboard.writeText(lastResult).then(function() {
+    document.getElementById('copy-btn').textContent = '✅ Copié !';
+    setTimeout(function() { document.getElementById('copy-btn').textContent = '📋 Copier'; }, 2000);
+  });
+});
+document.getElementById('download-btn').addEventListener('click', function() {
+  var blob = new Blob([lastResult], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'FicheAI_' + currentFormatName + '.txt';
+  a.click();
+});
+document.getElementById('reset-btn').addEventListener('click', function() {
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('course-input').value = '';
+  document.getElementById('char-count').textContent = '0 caractères';
+  document.getElementById('file-badge').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+function renderHistory() {
+  var section = document.getElementById('history-section'), list = document.getElementById('history-list');
+  if (!section) return;
+  if (sessionHistory.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = sessionHistory.map(function(h, i) {
+    return '<div class="hist-item" onclick="loadHistory(' + i + ')"><span class="hist-fmt">' + h.icon + '</span><span class="hist-preview">' + h.name + ' — ' + h.preview + '</span></div>';
+  }).join('');
+}
+
+function loadHistory(i) {
+  var h = sessionHistory[i];
+  document.getElementById('result-content').textContent = h.result;
+  document.getElementById('result-title').textContent = h.icon + ' ' + h.name;
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('result-spinner').style.display = 'none';
+  document.getElementById('result-content').style.display = 'block';
+  lastResult = h.result;
+}
+
+function getPlan() { return savedUser ? (savedUser.plan || 'starter') : 'starter'; }
+
+function useCourseInChat() {
+  var course = document.getElementById('course-input').value.trim();
+  if (!course) { showToast('⚠️ Colle ou importe un cours d\'abord !'); return; }
+  courseContent = course;
+  var el = document.getElementById('chat-context-text');
+  if (el) el.innerHTML = 'Cours chargé : <span>' + course.substring(0, 50) + '...</span>';
   showToast('✅ Cours chargé dans le chat !');
 }
 
-function formatChatText(text){
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/━+/g,'<hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:0.6rem 0">').replace(/\n/g,'<br>');
+function formatChatText(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/━+/g, '<hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:0.6rem 0">')
+    .replace(/\n/g, '<br>');
 }
 
-function addMessage(role,text){
-  var welcome=document.getElementById('chat-welcome');
-  if(welcome)welcome.style.display='none';
-  var messages=document.getElementById('chat-messages');
-  var div=document.createElement('div');
-  div.className='msg '+(role==='user'?'user':'ai');
-  var now=new Date();
-  var time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
-  var contentHtml=role==='ai'?formatChatText(text):text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  var actionsHtml=role==='ai'?'<div class="msg-actions-row"><button class="msg-act" onclick="copyMsg(this)">📋 Copier</button><button class="msg-act" onclick="saveMsg(this)">💾 Sauvegarder</button><button class="msg-act" onclick="exportMsgToPDF(this)">📄 PDF</button></div>':'';
-  div.innerHTML='<div class="msg-avatar">'+(role==='user'?'👤':'✨')+'</div><div class="msg-bubble"><div class="msg-content">'+contentHtml+'</div>'+actionsHtml+'<span class="msg-time">'+time+'</span></div>';
+function addMessage(role, text) {
+  var welcome = document.getElementById('chat-welcome');
+  if (welcome) welcome.style.display = 'none';
+  var messages = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+  var now = new Date();
+  var time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+  var contentHtml = role === 'ai' ? formatChatText(text) : text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  var actionsHtml = role === 'ai' ? '<div class="msg-actions-row"><button class="msg-act" onclick="copyMsg(this)">📋 Copier</button><button class="msg-act" onclick="saveMsg(this)">💾 Sauvegarder</button><button class="msg-act" onclick="exportMsgToPDF(this)">📄 PDF</button></div>' : '';
+  div.innerHTML = '<div class="msg-avatar">' + (role === 'user' ? '👤' : '✨') + '</div><div class="msg-bubble"><div class="msg-content">' + contentHtml + '</div>' + actionsHtml + '<span class="msg-time">' + time + '</span></div>';
   messages.appendChild(div);
-  setTimeout(function(){div.scrollIntoView({behavior:'smooth',block:'start'});},50);
+  setTimeout(function() { div.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
 }
 
-function copyMsg(btn){var content=btn.closest('.msg').querySelector('.msg-content').innerText;navigator.clipboard.writeText(content).then(function(){showToast('✅ Copié !');});}
-function saveMsg(btn){
-  if(!currentUserEmail){showToast('⚠️ Connecte-toi pour sauvegarder');return;}
-  var content=btn.closest('.msg').querySelector('.msg-content').innerText;
-  fetch(SUPABASE_URL+'/rest/v1/fiches',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},body:JSON.stringify({user_email:currentUserEmail,format:currentFormat,format_icon:currentFormatIcon,titre:'Chat — '+new Date().toLocaleDateString('fr-FR'),contenu:content})})
-  .then(function(){showToast('✅ Sauvegardé dans ta bibliothèque !');loadFichesCount();}).catch(function(){showToast('⚠️ Erreur sauvegarde');});
+function copyMsg(btn) {
+  var content = btn.closest('.msg').querySelector('.msg-content').innerText;
+  navigator.clipboard.writeText(content).then(function() { showToast('✅ Copié !'); });
 }
 
-function addTyping(){
-  var messages=document.getElementById('chat-messages');
-  var div=document.createElement('div');div.className='msg ai';div.id='typing-msg';
-  div.innerHTML='<div class="msg-avatar">✨</div><div class="msg-bubble"><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
-  messages.appendChild(div);div.scrollIntoView({behavior:'smooth',block:'start'});
+function saveMsg(btn) {
+  if (!currentUserEmail) { showToast('⚠️ Connecte-toi pour sauvegarder'); return; }
+  var content = btn.closest('.msg').querySelector('.msg-content').innerText;
+  fetch(SUPABASE_URL + '/rest/v1/fiches', { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Prefer': 'return=minimal' }, body: JSON.stringify({ user_email: currentUserEmail, format: currentFormat, format_icon: currentFormatIcon, titre: 'Chat — ' + new Date().toLocaleDateString('fr-FR'), contenu: content }) })
+  .then(function() { showToast('✅ Sauvegardé !'); loadFichesCount(); })
+  .catch(function() { showToast('⚠️ Erreur sauvegarde'); });
 }
-function removeTyping(){var t=document.getElementById('typing-msg');if(t)t.remove();}
 
-async function sendChatMessage(){
-  var plan=getPlan();
-  if(plan==='starter'){showToast('💬 Chat IA disponible à partir du plan Pro !');return;}
-  var limit=plan==='ultimate'?999999:20;
-  if(chatMsgCount>=limit&&limit!==999999){showToast('⚠️ Limite de '+limit+' messages atteinte !');return;}
-  var input=document.getElementById('chat-input');
-  var text=input.value.trim();if(!text)return;
-  input.value='';input.style.height='auto';
-  addMessage('user',text);
-  chatHistory.push({role:'user',content:text});
-  chatMsgCount++;updateChatCount();addTyping();
-  document.getElementById('chat-send-btn').disabled=true;
-  try{
-    var response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatHistory.slice(-12),courseContent:courseContent.substring(0,6000),email:currentUserEmail,language:document.getElementById('lang-sel').value})});
-    var data=await response.json();
+function addTyping() {
+  var messages = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = 'typing-msg';
+  div.innerHTML = '<div class="msg-avatar">✨</div><div class="msg-bubble"><div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  messages.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function removeTyping() { var t = document.getElementById('typing-msg'); if (t) t.remove(); }
+
+async function sendChatMessage() {
+  var plan = getPlan();
+  if (plan === 'starter') { showToast('💬 Chat IA disponible à partir du plan Pro !'); return; }
+  var limit = plan === 'ultimate' ? 999999 : 20;
+  if (chatMsgCount >= limit && limit !== 999999) { showToast('⚠️ Limite de ' + limit + ' messages atteinte !'); return; }
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  chatMsgCount++;
+  updateChatCount();
+  addTyping();
+  document.getElementById('chat-send-btn').disabled = true;
+  try {
+    var response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: chatHistory.slice(-12), courseContent: courseContent.substring(0, 6000), email: currentUserEmail, language: document.getElementById('lang-sel').value }) });
+    var data = await response.json();
     removeTyping();
-    if(data.error){addMessage('ai','⚠️ '+data.error);return;}
-    chatHistory.push({role:'assistant',content:data.result});
-    addMessage('ai',data.result);
-  }catch(e){removeTyping();addMessage('ai','⚠️ Erreur réseau. Réessaie.');}
-  document.getElementById('chat-send-btn').disabled=false;
+    if (data.error) { addMessage('ai', '⚠️ ' + data.error); return; }
+    chatHistory.push({ role: 'assistant', content: data.result });
+    addMessage('ai', data.result);
+  } catch(e) { removeTyping(); addMessage('ai', '⚠️ Erreur réseau. Réessaie.'); }
+  document.getElementById('chat-send-btn').disabled = false;
 }
 
-function updateChatCount(){
-  var plan=getPlan();var limit=plan==='ultimate'?'∞':20;
-  var el=document.getElementById('chat-count');if(el)el.textContent=chatMsgCount+' / '+limit+' messages ce mois';
+function updateChatCount() {
+  var plan = getPlan();
+  var limit = plan === 'ultimate' ? '∞' : 20;
+  var el = document.getElementById('chat-count');
+  if (el) el.textContent = chatMsgCount + ' / ' + limit + ' messages ce mois';
 }
-function sendSuggestion(text){document.getElementById('chat-input').value=text;sendChatMessage();}
-document.getElementById('chat-input').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
-document.getElementById('chat-input').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMessage();}});
 
-// ═══════════════════════════════════════════
-// EXPORT PDF — via impression navigateur (s'adapte à la longueur)
-// ═══════════════════════════════════════════
-function escapePdf(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function boldify(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');}
+function sendSuggestion(text) { document.getElementById('chat-input').value = text; sendChatMessage(); }
 
-function formatContentForPDF(content){
-  var lines=content.split('\n'),html='',inList=false;
-  lines.forEach(function(line){
-    var t=line.trim();
-    if(!t){if(inList){html+='</ul>';inList=false;}return;}
-    if(/^[━─=]{3,}$/.test(t)){if(inList){html+='</ul>';inList=false;}html+='<div class="pdf-sep"></div>';return;}
-    var sm=t.match(/^([📚🎯📖⚡❓🔗🃏🧠💬📅✅])\s*(.+)/u);
-    if(sm&&sm[2].length<70){if(inList){html+='</ul>';inList=false;}html+='<div class="pdf-section">'+escapePdf(sm[2])+'</div>';return;}
-    var bm=t.match(/^[▸→✦•\-]\s*(.+)/);
-    if(bm){if(!inList){html+='<ul class="pdf-list">';inList=true;}html+='<li>'+boldify(escapePdf(bm[1]))+'</li>';return;}
-    if(inList){html+='</ul>';inList=false;}
-    html+='<p class="pdf-p">'+boldify(escapePdf(t))+'</p>';
+document.getElementById('chat-input').addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'; });
+document.getElementById('chat-input').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); } });
+
+// ── EXPORT PDF ──
+function escapePdf(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function boldify(t) { return t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
+
+function formatContentForPDF(text) {
+  var lines = text.split('\n'), html = '', inList = false;
+  lines.forEach(function(line) {
+    var t = line.trim();
+    if (!t) { if (inList) { html += '</ul>'; inList = false; } return; }
+    if (/^[━─=]{3,}$/.test(t)) { if (inList) { html += '</ul>'; inList = false; } html += '<div class="pdf-sep"></div>'; return; }
+    var sm = t.match(/^([📚🎯📖⚡❓🔗🃏🧠💬📅✅])\s*(.+)/u);
+    if (sm && sm[2].length < 70) { if (inList) { html += '</ul>'; inList = false; } html += '<div class="pdf-section">' + escapePdf(sm[2]) + '</div>'; return; }
+    var bm = t.match(/^[▸→✦•\-]\s*(.+)/);
+    if (bm) { if (!inList) { html += '<ul class="pdf-list">'; inList = true; } html += '<li>' + boldify(escapePdf(bm[1])) + '</li>'; return; }
+    if (inList) { html += '</ul>'; inList = false; }
+    html += '<p class="pdf-p">' + boldify(escapePdf(t)) + '</p>';
   });
-  if(inList)html+='</ul>';
+  if (inList) html += '</ul>';
   return html;
 }
 
-function exportToPDF(content,title,format){
-  var plan=savedUser?(savedUser.plan||'starter'):'starter';
-  if(plan==='starter'){showToast('⚠️ Export PDF disponible à partir du plan Pro !');return;}
-  if(!content){showToast('⚠️ Rien à exporter.');return;}
+function exportToPDF(content, title, format) {
+  var plan = savedUser ? (savedUser.plan || 'starter') : 'starter';
+  if (plan === 'starter') { showToast('⚠️ Export PDF disponible à partir du plan Pro !'); return; }
+  if (!content) { showToast('⚠️ Rien à exporter.'); return; }
 
-  var cleanTitle=title.replace(/[\u{1F4DA}\u{1F3AF}\u{1F4D6}\u26A1\u2753\u{1F517}\u2501\u25B8\u2726\u{1F4C4}\u2705\u{1F0CF}\u{1F9E0}\u{1F4AC}\u{1F4C5}]/gu,'').trim();
-  var bodyHtml=formatContentForPDF(content);
+  var cleanTitle = title.replace(/[^\x00-\x7F\u00C0-\u017F\s]/g, '').trim();
+  var bodyHtml = formatContentForPDF(content);
 
-  var printWindow=window.open('','_blank');
-  printWindow.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+escapePdf(cleanTitle)+'</title><style>'+
-    '*{box-sizing:border-box;margin:0;padding:0}'+
-    'body{font-family:Georgia,Times,serif;color:#1a1a2e;font-size:13px;line-height:1.7;padding:48px 56px;max-width:800px;margin:0 auto;}'+
-    '.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2.5px solid #6c5ce7;padding-bottom:12px;margin-bottom:20px;}'+
-    '.logo-box{display:flex;align-items:center;gap:10px;}'+
-    '.logo-square{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);}'+
-    '.logo-text{font-family:Helvetica,Arial,sans-serif;font-size:18px;font-weight:800;color:#6c5ce7;}'+
-    '.logo-url{font-family:Helvetica,Arial,sans-serif;font-size:10px;color:#aaa;}'+
-    'h1{font-family:Helvetica,Arial,sans-serif;font-size:22px;font-weight:800;color:#1a1a2e;margin:0 0 6px;line-height:1.2;}'+
-    '.format-badge{display:inline-block;background:#f0edff;color:#6c5ce7;font-family:Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;margin-bottom:20px;letter-spacing:0.5px;}'+
-    '.pdf-section{font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:700;color:#6c5ce7;margin:18px 0 8px;padding-left:10px;border-left:3px solid #fd79a8;page-break-after:avoid;}'+
-    '.pdf-p{font-size:13px;line-height:1.7;margin:0 0 8px;color:#222;page-break-inside:avoid;}'+
-    '.pdf-list{margin:0 0 10px;padding-left:0;list-style:none;}'+
-    '.pdf-list li{font-size:13px;line-height:1.65;margin-bottom:6px;padding-left:16px;position:relative;color:#222;page-break-inside:avoid;}'+
-    '.pdf-list li::before{content:"●";color:#fd79a8;position:absolute;left:0;font-size:8px;top:5px;}'+
-    '.pdf-sep{border-top:1px solid #e8e4f5;margin:14px 0;}'+
-    'strong{color:#111;font-weight:700;}'+
-    '.footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-family:Helvetica,Arial,sans-serif;font-size:9px;color:#ccc;text-align:center;}'+
-    '@media print{body{padding:0;}@page{margin:15mm 15mm 15mm 15mm;}}'+
-  '</style></head><body>'+
-    '<div class="header"><div class="logo-box"><div class="logo-square"></div><span class="logo-text">FicheAI</span></div><span class="logo-url">ficheai.fr</span></div>'+
-    '<h1>'+escapePdf(cleanTitle)+'</h1>'+
-    '<div class="format-badge">'+(format||'FICHE').toUpperCase()+'</div>'+
-    '<div>'+bodyHtml+'</div>'+
-    '<div class="footer">FicheAI · Fait pour les étudiants 🎓</div>'+
-  '</body></html>
+  var css = [
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    'body{font-family:Georgia,Times,serif;color:#1a1a2e;font-size:13px;line-height:1.7;padding:48px 56px;max-width:800px;margin:0 auto;}',
+    '.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2.5px solid #6c5ce7;padding-bottom:12px;margin-bottom:20px;}',
+    '.logo-box{display:flex;align-items:center;gap:10px;}',
+    '.logo-sq{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#6c5ce7,#fd79a8);}',
+    '.logo-txt{font-family:Helvetica,Arial,sans-serif;font-size:18px;font-weight:800;color:#6c5ce7;}',
+    '.logo-url{font-family:Helvetica,Arial,sans-serif;font-size:10px;color:#aaa;}',
+    'h1{font-family:Helvetica,Arial,sans-serif;font-size:22px;font-weight:800;color:#1a1a2e;margin:0 0 6px;line-height:1.2;}',
+    '.badge{display:inline-block;background:#f0edff;color:#6c5ce7;font-family:Helvetica,Arial,sans-serif;font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;margin-bottom:20px;letter-spacing:0.5px;}',
+    '.pdf-section{font-family:Helvetica,Arial,sans-serif;font-size:14px;font-weight:700;color:#6c5ce7;margin:18px 0 8px;padding-left:10px;border-left:3px solid #fd79a8;page-break-after:avoid;}',
+    '.pdf-p{font-size:13px;line-height:1.7;margin:0 0 8px;color:#222;page-break-inside:avoid;}',
+    '.pdf-list{margin:0 0 10px;padding-left:0;list-style:none;}',
+    '.pdf-list li{font-size:13px;line-height:1.65;margin-bottom:6px;padding-left:16px;position:relative;color:#222;page-break-inside:avoid;}',
+    '.pdf-list li::before{content:"•";color:#fd79a8;position:absolute;left:0;}',
+    '.pdf-sep{border-top:1px solid #e8e4f5;margin:14px 0;}',
+    'strong{color:#111;font-weight:700;}',
+    '.footer{margin-top:32px;padding-top:12px;border-top:1px solid #eee;font-family:Helvetica,Arial,sans-serif;font-size:9px;color:#ccc;text-align:center;}',
+    '@media print{body{padding:0;}@page{margin:15mm;}}'
+  ].join('');
+
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapePdf(cleanTitle) + '</title><style>' + css + '</style></head><body>';
+  html += '<div class="header"><div class="logo-box"><div class="logo-sq"></div><span class="logo-txt">FicheAI</span></div><span class="logo-url">ficheai.fr</span></div>';
+  html += '<h1>' + escapePdf(cleanTitle) + '</h1>';
+  html += '<div class="badge">' + (format || 'FICHE').toUpperCase() + '</div>';
+  html += '<div>' + bodyHtml + '</div>';
+  html += '<div class="footer">FicheAI · Fait pour les etudiants</div>';
+  html += '</body></html>';
+
+  var w = window.open('', '_blank', 'width=900,height=700');
+  if (!w) { showToast('⚠️ Autorise les popups pour exporter en PDF'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(function() {
+    w.print();
+    setTimeout(function() { w.close(); }, 1000);
+  }, 600);
+}
+
+function exportMsgToPDF(btn) {
+  var content = btn.closest('.msg').querySelector('.msg-content').innerText;
+  exportToPDF(content, currentFormatIcon + ' ' + currentFormatName, currentFormatName);
+}
+</script>
+</body>
+</html>
