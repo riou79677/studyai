@@ -426,7 +426,7 @@ function showToast(msg){
 }
 
 function toggleMenu(){var m=document.getElementById('user-menu');m.style.display=m.style.display==='block'?'none':'block';}
-function deconnexion(){localStorage.removeItem('ficheai_user');window.location.reload();}
+function deconnexion(){localStorage.removeItem('ficheai_user');window.location.href='/';}
 document.addEventListener('click',function(e){
   var menu=document.getElementById('user-menu'),display=document.getElementById('user-display');
   if(menu&&display&&!display.contains(e.target)&&!menu.contains(e.target))menu.style.display='none';
